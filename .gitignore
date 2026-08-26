@@ -1,0 +1,22 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# model / hf caches
+.cache/
+models--*/
+*.safetensors
+*.bin
+*.gguf
+
+# large generated data (parquet results are tracked selectively under results/)
+*.pt
+*.pth
+
+.env
+.DS_Store
