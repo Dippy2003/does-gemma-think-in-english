@@ -1,3 +1,12 @@
+"""Wrappers around TransformerLens's caching API for residual-stream extraction.
+
+Everything here reads intermediate activations; it does not modify them.
+Reading an activation and decoding it (logit lens) is correlational — it
+shows what the model's output head *would* produce from that state, not that
+the model is causally relying on that state. See src/patching.py for the
+causal counterpart.
+"""
+
 import torch
 
 
