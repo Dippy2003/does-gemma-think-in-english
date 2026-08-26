@@ -111,3 +111,31 @@ def layer_sweep(
             )
         )
     return results
+
+
+def layer_by_position_grid(
+    model, clean_tokens, corrupt_tokens, clean_cache, n_positions, correct_id, incorrect_id
+) -> list[PatchResult]:
+    """Patch every (layer, position) combination — the full causal map."""
+    clean_logits = model(clean_tokens)
+    corrupt_logits = model(corrupt_tokens)
+    clean_ld = logit_diff(clean_logits, n_positions - 1, correct_id, incorrect_id)
+    corrupt_ld = logit_diff(corrupt_logits, n_positions - 1, correct_id, incorrect_id)
+
+    results = []
+    for layer in range(model.cfg.n_layers):
+        for position in range(n_positions):
+            patched_logits = patch_layer_at_position(
+                model, corrupt_tokens, clean_cache, layer, position
+            )
+            patched_ld = logit_diff(patched_logits, n_positions - 1, correct_id, incorrect_id)
+            results.append(
+                PatchResult(
+                    layer=layer,
+                    position=position,
+                    clean_logit_diff=clean_ld,
+                    corrupt_logit_diff=corrupt_ld,
+                    patched_logit_diff=patched_ld,
+                )
+            )
+    return results
