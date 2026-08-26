@@ -6,7 +6,13 @@ import pandas as pd
 def load_tokenizer(model_name: str):
     from transformers import AutoTokenizer
 
-    return AutoTokenizer.from_pretrained(model_name, token=os.environ.get("HF_TOKEN"))
+    token = os.environ.get("HF_TOKEN")
+    try:
+        return AutoTokenizer.from_pretrained(model_name, token=token)
+    except ValueError:
+        # some tokenizers (e.g. plain sentencepiece checkpoints) have no
+        # fast (Rust) implementation available
+        return AutoTokenizer.from_pretrained(model_name, token=token, use_fast=False)
 
 
 def tokens_per_word(text: str, tokenizer) -> float:
