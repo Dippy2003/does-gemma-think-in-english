@@ -85,28 +85,29 @@ patching (unrelated layers, random directions, cross-prompt activations),
 and cross-model replication — see `docs/CONTROLS.md` for the rationale
 behind each.
 
-## Results (preliminary, n=4 of 100 probes)
+## Results (preliminary, n=8 of 100 probes)
 
 This repo's development environment is CPU-only (no CUDA build of torch, 4GB
 laptop GPU — see `docs/COMPUTE.md`), and a single 26-layer logit-lens trace
-on `gemma-2-2b` takes on the order of minutes there. Only 4 of the 100 probe
-prompts had completed a full batch trace (`results/traces.jsonl`) at the time
-of this writeup; the figures and full-dataset statistics described elsewhere
-in this repo (`README.md` "Headline figure", `results/PROBE_RESULTS_STATUS.md`,
+on `gemma-2-2b` took roughly 3-4 minutes there. 8 of the 100 probe prompts
+had completed a full batch trace (`results/traces.jsonl`) at the time of
+this writeup; the figures and full-dataset statistics described elsewhere
+in this repo (`README.md` "Headline finding", `results/PROBE_RESULTS_STATUS.md`,
 `results/PATCHING_RESULTS_STATUS.md`) are pending completion of that batch
 run and are not yet backed by data. What follows is reported honestly as a
-preliminary read on 4 prompts, not a dataset-level finding.
+preliminary read on 8 prompts, not a dataset-level finding.
 
 Running `detect_pivot(target_script="sinhala")` (a *stable* switch to Sinhala
-that persists through the final layer) on these 4 traces found **zero**
-stable pivots to Sinhala. Two distinct patterns appeared instead:
+that persists through the final layer) on these 8 traces
+(`src.pivot.aggregate_pivot_stats`) found **zero** stable pivots to Sinhala
+(`pivot_rate=0.0`). Two distinct patterns appeared instead:
 
-- 2 of 4 prompts: the readout stays `latin`-script for nearly the entire
+- 6 of 8 prompts: the readout stays `latin`-script for nearly the entire
   layer stack, decaying into unclassified ("other") tokens only in the last
   few layers — consistent with Outcome 1 (English-pivot) *without* a
   detectable return to Sinhala at the output, at least under this repo's
   strict pivot definition.
-- 2 of 4 prompts: the readout starts `sinhala`-script in the earliest
+- 2 of 8 prompts: the readout starts `sinhala`-script in the earliest
   layers, but degrades into unclassified ("other") tokens for the rest of
   the network rather than settling into either `latin` or `sinhala` — a
   diffuse, non-coherent readout consistent with Outcome 2 in this repo's
@@ -114,16 +115,23 @@ stable pivots to Sinhala. Two distinct patterns appeared instead:
   as the most likely result for a low-resource, heavily fragmented script
   going in.
 
-**This is not a dataset-level claim.** n=4 is far too small to distinguish a
+**This is not a dataset-level claim.** n=8 is far too small to distinguish a
 real pattern from noise, and no controls (Phase 16/24) or activation
-patching (the only causal method in this repo) have been run against these 4
+patching (the only causal method in this repo) have been run against these 8
 traces. It is reported here only because the honesty rule governing this
 repo (`MASTER_PROMPT.md`) requires reporting what was actually run, not
-projecting what the full run would likely show.
+projecting what the full run would likely show. Notably, *no* traced prompt
+shows the classic Wendler-et-al. English-pivot-then-return-to-source-language
+pattern at all under this repo's strict definition — the readout either
+stays English-like throughout, or degrades to unclassifiable tokens. Whether
+that reflects Outcome 1 (with a looser pivot definition), Outcome 2, or an
+artifact of `from_pretrained_no_processing` skipping the standard layernorm
+folding (see Limitations) cannot be distinguished without more data and,
+critically, without the English-identity control actually being run.
 
 ## Limitations and threats to validity
 
-- **Sample size.** The results above cover 4 of 100 probe prompts, 0 of the
+- **Sample size.** The results above cover 8 of 100 probe prompts, 0 of the
   planned Tamil/English-identity/shuffled control runs, and 0 activation
   patching sweeps. Every quantitative claim in this repo should be read
   against that gap until the full batch completes.
