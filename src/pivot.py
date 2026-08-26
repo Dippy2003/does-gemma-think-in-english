@@ -1,9 +1,14 @@
 """Pivot detection from logit-lens traces.
 
-Like everything downstream of `src/logit_lens.py`, a detected "pivot" is a
-statement about what the readout looks like layer to layer, not a claim about
-the model's internal computation. Treat it as descriptive statistics on
-script labels, not as evidence of translation.
+A "pivot" as defined here is purely descriptive: the first layer at which a
+sequence of decoded readouts switches script and stays switched. It is
+computed entirely from `src/logit_lens.py` output, so it inherits that
+module's limits in full — a detected pivot at layer N is not evidence that
+layer N is where the model "switches to English" or "switches to Sinhala"
+internally. It is evidence that the *readout* switches there. Two traces can
+have the identical logit-lens pivot layer while the underlying computation
+that actually determines the output differs completely, which is exactly why
+`src/patching.py` exists as the causal check against this.
 """
 
 import pandas as pd
