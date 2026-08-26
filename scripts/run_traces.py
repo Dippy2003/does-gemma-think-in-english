@@ -8,7 +8,7 @@ from pathlib import Path
 import torch
 
 from src.hooks import run_with_cache
-from src.io import load_probes
+from src.io import load_probes, read_done_ids
 from src.logit_lens import build_trace, trace_to_json
 from src.model import load_model
 
@@ -27,10 +27,9 @@ def main() -> None:
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    done_ids = set()
-    if out_path.exists():
-        for line in out_path.read_text(encoding="utf-8").splitlines():
-            done_ids.add(json.loads(line)["id"])
+    done_ids = read_done_ids(out_path)
+    if done_ids:
+        print(f"resuming: {len(done_ids)} rows already done")
 
     with out_path.open("a", encoding="utf-8") as f:
         for i, row in df.iterrows():

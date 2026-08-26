@@ -3,6 +3,20 @@ from pathlib import Path
 import pandas as pd
 
 
+def read_done_ids(jsonl_path: str | Path) -> set:
+    """IDs already present in a checkpointed .jsonl batch-run output file."""
+    import json
+
+    path = Path(jsonl_path)
+    if not path.exists():
+        return set()
+    ids = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            ids.add(json.loads(line)["id"])
+    return ids
+
+
 def write_parquet(df: pd.DataFrame, path: str | Path) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(path, index=False)
