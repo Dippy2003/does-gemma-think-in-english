@@ -9,7 +9,7 @@ src/patching.py.
 
 import numpy as np
 
-from src.hooks import resid_post_stack
+from src.hooks import resid_post_stack, run_with_cache
 
 
 def extract_activations(model, cache, position: int = -1) -> np.ndarray:
@@ -43,3 +43,23 @@ def standardize(train: np.ndarray, test: np.ndarray) -> tuple:
     mean = train.mean(axis=0, keepdims=True)
     std = train.std(axis=0, keepdims=True) + 1e-8
     return (train - mean) / std, (test - mean) / std
+
+
+def build_probe_dataset(model, prompts_by_language: dict) -> dict:
+    """Run every prompt through the model and collect (prompt_id, layer,
+    activation, label) rows for "which language is this" classification.
+
+    `prompts_by_language`: {language_label: [(prompt_id, prompt_text), ...]}
+    Returns {"X": [n_layers, n_examples, d_model], "y": [n_examples], "prompt_ids": [...]}.
+    """
+    xs, ys, ids = [], [], []
+    for label, prompts in prompts_by_language.items():
+        for prompt_id, text in prompts:
+            _, _, cache = run_with_cache(model, text)
+            acts = extract_activations(model, cache)  # [n_layers, d_model]
+            xs.append(acts)
+            ys.append(label)
+            ids.append(prompt_id)
+    import numpy as np
+
+    return {"X": np.stack(xs, axis=1), "y": np.array(ys), "prompt_ids": ids}
