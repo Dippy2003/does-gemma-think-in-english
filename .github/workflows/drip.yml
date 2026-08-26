@@ -1,0 +1,86 @@
+name: drip
+
+on:
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+    inputs:
+      count:
+        description: 'Promote exactly N commits now (blank = schedule-based catch-up)'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Promote commits
+        env:
+          START_DATE: '2026-08-28'
+          MANUAL_COUNT: ${{ github.event.inputs.count }}
+        run: |
+          set -euo pipefail
+
+          # day 1 .. day 30, sums to 210. weekends lighter, occasional heavy days.
+          SCHEDULE=(7 4 3 9 6 13 5 8 3 2 10 7 14 6 9 4 3 8 13 5 7 11 3 2 10 6 8 13 7 4)
+          TOTAL_DAYS=${#SCHEDULE[@]}
+
+          git fetch origin dev:refs/remotes/origin/dev
+          git fetch origin --tags
+
+          BASE=$(git rev-parse drip-base)
+          PROMOTED=$(git rev-list --count "$BASE"..origin/main)
+          REMAINING=$(git rev-list --count origin/main..origin/dev)
+
+          echo "promoted: $PROMOTED | remaining on dev: $REMAINING"
+
+          if [ "$REMAINING" -eq 0 ]; then
+            echo "dev fully promoted - nothing to do"
+            exit 0
+          fi
+
+          if [ -n "$MANUAL_COUNT" ]; then
+            WANT="$MANUAL_COUNT"
+          else
+            NOW=$(date -u +%s)
+            START=$(date -u -d "$START_DATE" +%s)
+            if [ "$NOW" -lt "$START" ]; then
+              echo "drip has not started yet (starts $START_DATE)"
+              exit 0
+            fi
+            ELAPSED=$(( (NOW - START) / 86400 + 1 ))
+            [ "$ELAPSED" -gt "$TOTAL_DAYS" ] && ELAPSED="$TOTAL_DAYS"
+
+            TARGET=0
+            for (( i=0; i<ELAPSED; i++ )); do
+              TARGET=$(( TARGET + SCHEDULE[i] ))
+            done
+
+            TODAY=${SCHEDULE[$(( ELAPSED - 1 ))]}
+            echo "day $ELAPSED/$TOTAL_DAYS | today's quota: $TODAY | cumulative target: $TARGET"
+            WANT=$(( TARGET - PROMOTED ))
+          fi
+
+          if [ "$WANT" -le 0 ]; then
+            echo "already up to date for today"
+            exit 0
+          fi
+          [ "$WANT" -gt "$REMAINING" ] && WANT="$REMAINING"
+
+          SHA=$(git rev-list --reverse origin/main..origin/dev | sed -n "${WANT}p")
+          echo "promoting $WANT commit(s), up to $SHA"
+          git push origin "$SHA":main
+
+          NEW_TOTAL=$(( PROMOTED + WANT ))
+          {
+            echo "### Drip"
+            echo ""
+            echo "Promoted **$WANT** commit(s). Total on main: **$NEW_TOTAL / 210**"
+          } >> "$GITHUB_STEP_SUMMARY"
