@@ -120,3 +120,37 @@ patching (the only causal method in this repo) have been run against these 4
 traces. It is reported here only because the honesty rule governing this
 repo (`MASTER_PROMPT.md`) requires reporting what was actually run, not
 projecting what the full run would likely show.
+
+## Limitations and threats to validity
+
+- **Sample size.** The results above cover 4 of 100 probe prompts, 0 of the
+  planned Tamil/English-identity/shuffled control runs, and 0 activation
+  patching sweeps. Every quantitative claim in this repo should be read
+  against that gap until the full batch completes.
+- **Compute environment mismatch.** `MASTER_PROMPT.md` targets a free Colab
+  T4 (16GB VRAM, CUDA). This repo was developed and verified on a CPU-only
+  torch build with a 4GB laptop GPU that CUDA-enabled torch never actually
+  exercised — see `docs/COMPUTE.md`. `HookedTransformer.from_pretrained_no_processing`
+  was required to avoid an OOM/segfault in the default weight-processing
+  path under these constraints (see the `fix:` commits in `src/model.py`'s
+  history). A GPU run on the intended hardware has not been performed and
+  may behave differently.
+- **No processed weights.** Because `from_pretrained_no_processing` was
+  used, layernorms are not folded and unembed weights are not centered —
+  standard TransformerLens conveniences that some analyses (e.g. exact
+  logit attribution) assume. Logit-lens argmax decoding, this repo's main
+  method, does not depend on those foldings, but any future analysis that
+  does should account for this.
+- **Probe set is unverified.** Every row in `data/parallel_probes.csv` has
+  `verified=false` (`data/README.md`). No native speaker has checked the
+  Sinhala/Tamil translations. `scripts/check_probes.py`'s 80% coverage gate
+  has not been passed, and per the repo's own design (`MASTER_PROMPT.md`
+  section 6.2), no downstream result should be treated as final until it is.
+- **Llama-3.2 fertility not measured** (gated, access not granted to this
+  project's token — `results/fertility_llama-3.2_STATUS.md`); fertility
+  comparisons in this repo cover 3 of the intended 4 tokenizers.
+- **English identity control not run.** The single most basic sanity check
+  — does the pipeline detect the standard pivot on English-to-English
+  prompts at all — has not been executed. Until it has, the absence of a
+  Sinhala pivot in the n=4 sample above cannot be distinguished from a
+  pipeline defect.
