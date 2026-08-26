@@ -36,6 +36,14 @@ tokenizer. See `figures/fertility_bar_chart.png` and
 `figures/fertility_distribution_violin.png`. `meta-llama/Llama-3.2-1B`'s
 tokenizer could not be measured — see `results/fertility_llama-3.2_STATUS.md`.
 
+## Headline figure
+
+`figures/pivot_layer_language.png` shows, layer by layer, what fraction of
+Sinhala-prompt readouts decode to each Unicode script — the logit-lens
+analogue of Wendler et al.'s English-pivot curve, generated from
+`results/traces.parquet` (Phase 17+). This is a correlational readout, not a
+causal claim; see the note above and `src/logit_lens.py`.
+
 **This is a confound, not a finding.** Higher fertility means the model has
 more sequence positions to process the same content — more layers of residual
 stream in which a pivot could, mechanically, have more room to happen or not
