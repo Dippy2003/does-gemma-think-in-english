@@ -71,6 +71,18 @@ def layer_confusion_matrix(clf, X_layer_test, y_test):
     return confusion_matrix(y_test, y_pred, labels=clf.classes_)
 
 
+def bootstrap_ci(cv_scores: np.ndarray, n_boot: int = 2000, ci: float = 0.95, seed: int = 0) -> dict:
+    rng = np.random.default_rng(seed)
+    boot_means = [rng.choice(cv_scores, size=len(cv_scores), replace=True).mean() for _ in range(n_boot)]
+    lo = (1 - ci) / 2 * 100
+    hi = (1 + ci) / 2 * 100
+    return {
+        "mean": float(np.mean(cv_scores)),
+        "ci_low": float(np.percentile(boot_means, lo)),
+        "ci_high": float(np.percentile(boot_means, hi)),
+    }
+
+
 def significance_vs_baseline(cv_scores: np.ndarray, baseline: float) -> dict:
     """One-sample t-test-style check: is the mean CV accuracy meaningfully
     above the random/majority baseline, given the spread across folds?"""
