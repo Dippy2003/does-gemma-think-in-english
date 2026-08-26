@@ -1,4 +1,4 @@
-from src.scripts import script_of
+from src.scripts import script_of, script_ratios
 
 
 def test_sinhala():
@@ -27,3 +27,22 @@ def test_han():
 
 def test_unknown():
     assert script_of("☃") == "other"
+
+
+def test_empty_string():
+    assert script_of("") == "other"
+    assert script_ratios("") == {}
+
+
+def test_punctuation_only():
+    assert script_of("!?.,") == "other"
+
+
+def test_digits_only():
+    assert script_of("12345") == "other"
+
+
+def test_mixed_script_ratio():
+    ratios = script_ratios("aසb")
+    assert ratios["latin"] == 2 / 3
+    assert ratios["sinhala"] == 1 / 3
