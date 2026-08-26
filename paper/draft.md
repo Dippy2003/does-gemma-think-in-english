@@ -154,3 +154,28 @@ projecting what the full run would likely show.
   prompts at all — has not been executed. Until it has, the absence of a
   Sinhala pivot in the n=4 sample above cannot be distinguished from a
   pipeline defect.
+
+## Citation and reproducibility
+
+```
+@article{wendler2024llamas,
+  title={Do Llamas Work in English? On the Latent Language of Multilingual Transformers},
+  author={Wendler, Chris and Veselovsky, Veniamin and Monea, Giovanni and West, Robert},
+  journal={arXiv preprint arXiv:2402.10588},
+  year={2024}
+}
+```
+
+Reproducibility: `requirements.txt` is pinned to the exact versions verified
+against this repo's own execution environment (`torch==2.13.0`,
+`transformer-lens==3.8.0`, `transformers==5.15.1`). See the `fix:` commits
+in `src/model.py`'s git history for two real bugs hit and fixed while
+getting `google/gemma-2-2b` to load here — an invalid `hf_token` kwarg, and
+a CPU weight-processing OOM/segfault worked around via
+`from_pretrained_no_processing`. `docs/COMPUTE.md` documents what
+"verified" means concretely: CPU-only torch, no CUDA build, a 4GB laptop GPU
+never actually exercised. `results/manifest.json` records which git commit
+produced each results artifact. Every experiment script degrades to CPU
+rather than crashing (`src/model.get_device`), and every batch runner
+checkpoints via append-only `.jsonl` (`src/io.read_done_ids`) so an
+interrupted run resumes rather than restarting from scratch.
