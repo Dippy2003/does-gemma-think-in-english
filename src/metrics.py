@@ -21,3 +21,11 @@ def fertility_comparison_table(fertility_dfs: dict[str, pd.DataFrame]) -> pd.Dat
 def per_language_distribution(df: pd.DataFrame, column: str = "tokens_per_word") -> pd.DataFrame:
     """Mean, std, min, max of a fertility column, grouped by language."""
     return df.groupby("language")[column].agg(["mean", "std", "min", "max"])
+
+
+def cross_model_comparison(pivot_stats_by_model: dict) -> pd.DataFrame:
+    """Combine aggregate_pivot_stats() results from multiple models into one table."""
+    rows = []
+    for model_name, stats in pivot_stats_by_model.items():
+        rows.append({"model": model_name, **stats})
+    return pd.DataFrame(rows)
