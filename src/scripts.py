@@ -14,3 +14,14 @@ def script_of(s: str) -> str:
         if 0x0041 <= cp <= 0x007A:
             return "latin"
     return "other"
+
+
+def script_ratios(s: str) -> dict:
+    """Fraction of characters in `s` belonging to each detected script."""
+    if not s:
+        return {}
+    counts: dict = {}
+    for ch in s:
+        counts[script_of(ch)] = counts.get(script_of(ch), 0) + 1
+    n = len(s)
+    return {k: v / n for k, v in counts.items()}
