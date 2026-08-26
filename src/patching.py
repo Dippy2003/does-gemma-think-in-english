@@ -7,6 +7,11 @@ and position into the other run, and measure whether the output changes. If
 patching layer 14 flips the answer and patching layer 3 does not, layer 14 is
 where the decision actually lives — a claim logit lens or probing alone
 cannot support.
+
+This is the only module in the repo where a result can be reported as
+"the model relies on this representation," rather than "the readout at this
+layer looks like this." Every other module's output should be read as
+suggestive of where to patch, not as a finding on its own.
 """
 
 from dataclasses import dataclass
