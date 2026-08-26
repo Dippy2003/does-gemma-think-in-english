@@ -1,0 +1,6 @@
+.script-sinhala { color: #d95f02; font-weight: 600; }
+.script-tamil { color: #1b9e77; font-weight: 600; }
+.script-latin { color: #7570b3; }
+.script-devanagari { color: #e7298a; font-weight: 600; }
+.script-other { color: #999999; }
+.token { border: 1px solid #ccc; border-radius: 4px; padding: 2px 6px; margin: 2px; display: inline-block; }
