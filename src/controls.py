@@ -5,6 +5,8 @@ controls is noise, and reporting that is a stronger outcome than claiming a
 clean effect.
 """
 
+import random
+
 from src.io import load_probes
 
 
@@ -16,6 +18,20 @@ def tamil_condition() -> "list[dict]":
     return df[["id", "tamil", "answer_ta"]].rename(
         columns={"tamil": "prompt", "answer_ta": "answer"}
     ).to_dict("records")
+
+
+def shuffled_prompt_condition(seed: int = 0) -> "list[dict]":
+    """Sinhala prompts with their word order shuffled — destroys syntax while
+    keeping token-level script/fertility identical, isolating "is this
+    language" from "is this a coherent sentence in this language."""
+    df = load_probes()
+    rng = random.Random(seed)
+    rows = []
+    for _, row in df.iterrows():
+        words = row["sinhala"].split()
+        rng.shuffle(words)
+        rows.append({"id": row["id"], "prompt": " ".join(words), "answer": row["answer_si"]})
+    return rows
 
 
 def english_identity_condition() -> "list[dict]":
