@@ -33,6 +33,11 @@ def fertility_bar_chart(table, value: str = "tokens_per_word"):
     return fig
 
 
+def caption(text: str, n: int) -> str:
+    """Standard figure-caption prefix, e.g. 'Figure 3. <text>'."""
+    return f"Figure {n}. {text}"
+
+
 def save_figure(fig, name: str, formats=("png", "pdf")) -> None:
     Path("figures").mkdir(parents=True, exist_ok=True)
     for fmt in formats:
