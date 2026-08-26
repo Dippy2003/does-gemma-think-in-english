@@ -28,6 +28,9 @@ def get_model():
     """
     global _MODEL, _MODEL_LOAD_FAILED
     if _MODEL is None and not _MODEL_LOAD_FAILED:
+        device = get_device()
+        if device == "cpu":
+            print("no GPU detected — loading in CPU-only degraded mode (slower forward passes)")
         try:
             _MODEL = load_model("gemma-2-2b")
         except Exception:  # noqa: BLE001
