@@ -15,3 +15,8 @@ def resid_post_stack(cache, n_layers: int) -> torch.Tensor:
 def apply_final_ln(model, resid: torch.Tensor) -> torch.Tensor:
     """Apply the model's final layernorm to a residual-stream tensor."""
     return model.ln_final(resid)
+
+
+def unembed(model, normed_resid: torch.Tensor) -> torch.Tensor:
+    """Project a (post-final-LN) residual-stream tensor through the unembed matrix."""
+    return model.unembed(normed_resid)
