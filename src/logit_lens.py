@@ -1,10 +1,18 @@
 """Logit lens: decode intermediate residual-stream states through the output head.
 
-This is a readout, not a mechanism. Logit lens shows what the unembedding
-matrix would produce from an intermediate layer's residual stream — it is not
-evidence that the model is "thinking" in whatever language that decode
-happens to be. Only activation patching (src/patching.py) supports a causal
-claim about what the model actually relies on.
+This is a readout, not a mechanism. At each layer we take the residual
+stream, apply the model's final layernorm, and project through the unembed
+matrix — the same computation the model performs to produce its actual
+output, just run early. A layer's argmax token tells you what the output
+head *would* say if the network stopped there. It does not tell you that the
+network is internally "thinking" in that language, that this layer computed
+that token, or that the model relies on this representation causally — the
+residual stream at every layer is later read, transformed, and possibly
+overwritten by everything downstream. The only method in this repo that
+supports a causal claim is activation patching (src/patching.py): does
+transplanting this layer's activation into a different run change the
+output? Logit lens results should be reported as "the readout at layer N is
+X," never as "the model is doing X at layer N."
 """
 
 from dataclasses import dataclass, field
