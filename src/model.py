@@ -33,7 +33,16 @@ def load_model(name: str = "gemma-2-2b", dtype: str | None = None) -> HookedTran
         dtype = select_dtype(device, vram_gb)
     # HF_TOKEN is picked up automatically by huggingface_hub from the
     # environment; TransformerLens's from_pretrained doesn't take a token kwarg.
-    return HookedTransformer.from_pretrained(name, dtype=dtype, device=device)
+    #
+    # from_pretrained's default weight-processing path (folding layernorms,
+    # centering weights) clones large chunks of the state dict and segfaults
+    # under low-precision dtypes on memory-constrained CPU-only hosts; the
+    # unprocessed path avoids that at the cost of slightly slower forward
+    # passes (no folded layernorm).
+    loader = HookedTransformer.from_pretrained
+    if device == "cpu":
+        loader = HookedTransformer.from_pretrained_no_processing
+    return loader(name, dtype=dtype, device=device)
 
 
 def load_with_fallback(role: str = "primary", dtype: str | None = None) -> HookedTransformer:
