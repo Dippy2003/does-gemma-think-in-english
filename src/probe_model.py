@@ -50,3 +50,13 @@ def probe_results_to_dataframe(results: dict, model_name: str = "gemma-2") -> "p
             for layer, r in results.items()
         ]
     )
+
+
+def weight_norms(results: dict) -> dict:
+    """L2 norm of each layer's probe weight vector.
+
+    A layer where the probe relies on a small number of large-magnitude
+    directions vs. many small ones is a coarse hint about how distributed the
+    language signal is at that layer — not a causal claim.
+    """
+    return {layer: float(np.linalg.norm(r["clf"].coef_)) for layer, r in results.items()}
