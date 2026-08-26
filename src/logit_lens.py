@@ -78,3 +78,10 @@ def build_trace(model, prompt: str, cache, position: int = -1) -> Trace:
             LayerTrace(layer=layer, token=token, script=script_of(token), prob=probs.max().item())
         )
     return trace
+
+
+def print_trace_table(trace: Trace) -> None:
+    print(f"prompt: {trace.prompt!r}")
+    print(f"{'layer':>5}  {'token':<20}  {'script':<12}  {'prob':>6}")
+    for lt in trace.layers:
+        print(f"{lt.layer:>5}  {lt.token[:20]:<20}  {lt.script:<12}  {lt.prob:>6.3f}")
