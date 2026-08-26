@@ -44,6 +44,11 @@ def summarize_scores(scores) -> dict:
     }
 
 
+def aggregate_patch_effects(patching_df: pd.DataFrame) -> pd.DataFrame:
+    """Mean patch effect per layer, aggregated across every prompt in the sweep."""
+    return patching_df.groupby("layer")["effect"].agg(["mean", "std", "count"]).reset_index()
+
+
 def cross_model_comparison(pivot_stats_by_model: dict) -> pd.DataFrame:
     """Combine aggregate_pivot_stats() results from multiple models into one table."""
     rows = []
