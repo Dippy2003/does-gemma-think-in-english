@@ -75,8 +75,13 @@ def build_trace(model, prompt: str, cache, position: int = -1) -> Trace:
     for layer in range(model.cfg.n_layers):
         token = decode_layer(model, stacked[layer], position)
         probs = layer_probabilities(model, stacked[layer], position)
+        # early layers frequently decode to whitespace/empty-looking tokens;
+        # script_of("") returns "other" rather than raising, so this is safe
+        display_token = token if token.strip() else "<empty>"
         trace.layers.append(
-            LayerTrace(layer=layer, token=token, script=script_of(token), prob=probs.max().item())
+            LayerTrace(
+                layer=layer, token=display_token, script=script_of(token), prob=probs.max().item()
+            )
         )
     return trace
 
