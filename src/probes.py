@@ -63,3 +63,17 @@ def build_probe_dataset(model, prompts_by_language: dict) -> dict:
     import numpy as np
 
     return {"X": np.stack(xs, axis=1), "y": np.array(ys), "prompt_ids": ids}
+
+
+def save_activation_cache(dataset: dict, path: str) -> None:
+    """Persist a probe dataset (built once, reused across every probe/layer
+    combination) to a single .npz file instead of recomputing activations
+    per experiment."""
+    np.savez_compressed(
+        path, X=dataset["X"], y=dataset["y"], prompt_ids=np.array(dataset["prompt_ids"])
+    )
+
+
+def load_activation_cache(path: str) -> dict:
+    data = np.load(path, allow_pickle=True)
+    return {"X": data["X"], "y": data["y"], "prompt_ids": data["prompt_ids"].tolist()}
