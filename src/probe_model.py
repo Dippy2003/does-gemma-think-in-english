@@ -66,3 +66,18 @@ def weight_norms(results: dict) -> dict:
 def layer_confusion_matrix(clf, X_layer_test, y_test):
     y_pred = clf.predict(X_layer_test)
     return confusion_matrix(y_test, y_pred, labels=clf.classes_)
+
+
+def significance_vs_baseline(cv_scores: np.ndarray, baseline: float) -> dict:
+    """One-sample t-test-style check: is the mean CV accuracy meaningfully
+    above the random/majority baseline, given the spread across folds?"""
+    from scipy import stats
+
+    t_stat, p_value = stats.ttest_1samp(cv_scores, baseline)
+    return {
+        "mean_accuracy": float(cv_scores.mean()),
+        "baseline": baseline,
+        "t_stat": float(t_stat),
+        "p_value": float(p_value),
+        "significant_at_0.05": bool(p_value < 0.05 and cv_scores.mean() > baseline),
+    }
