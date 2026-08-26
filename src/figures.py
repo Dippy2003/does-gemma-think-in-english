@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -29,6 +31,12 @@ def fertility_bar_chart(table, value: str = "tokens_per_word"):
     ax.legend(title="language")
     fig.tight_layout()
     return fig
+
+
+def save_figure(fig, name: str, formats=("png", "pdf")) -> None:
+    Path("figures").mkdir(parents=True, exist_ok=True)
+    for fmt in formats:
+        fig.savefig(f"figures/{name}.{fmt}", bbox_inches="tight")
 
 
 def fertility_distribution_violin(df, value: str = "tokens_per_word"):
