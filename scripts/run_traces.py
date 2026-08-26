@@ -19,6 +19,12 @@ def main() -> None:
     parser.add_argument("--model", default="gemma-2-2b")
     parser.add_argument("--out", default="results/traces.jsonl")
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument(
+        "--column",
+        default="sinhala",
+        choices=["sinhala", "tamil", "english"],
+        help="probe column to trace (default: sinhala)",
+    )
     args = parser.parse_args()
 
     model = load_model(args.model)
@@ -40,8 +46,8 @@ def main() -> None:
                 continue
             cache = None
             try:
-                _, _, cache = run_with_cache(model, row["sinhala"])
-                trace = build_trace(model, row["sinhala"], cache)
+                _, _, cache = run_with_cache(model, row[args.column])
+                trace = build_trace(model, row[args.column], cache)
                 f.write(json.dumps({"id": row["id"], **json.loads(trace_to_json(trace))}) + "\n")
                 f.flush()
             finally:
