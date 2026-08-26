@@ -16,5 +16,11 @@
     "model": "gpt-oss",
     "git_commit": "956fd41d0e0d38dc3109f2e82c2c1872ebbe899c",
     "n_rows": 30
+  },
+  {
+    "artifact": "traces",
+    "model": "gemma-2-2b",
+    "git_commit": "97e165e3d1671b3fcd1d3408a17ecbf0a3d47400",
+    "n_rows": 208
   }
 ]
