@@ -1,4 +1,5 @@
 import hashlib
+import os
 import sqlite3
 from pathlib import Path
 
@@ -12,7 +13,13 @@ CREATE TABLE IF NOT EXISTS trace_cache (
 """
 
 
-def get_connection(path: str = "app/cache.sqlite3") -> sqlite3.Connection:
+def get_connection(path: str | None = None) -> sqlite3.Connection:
+    """Defaults to `app/cache.sqlite3`, but honors CACHE_DB_PATH so a
+    HuggingFace Space with persistent storage mounted at /data survives
+    restarts without re-prewarming — a plain relative path would otherwise
+    get wiped on every Space rebuild."""
+    if path is None:
+        path = os.environ.get("CACHE_DB_PATH", "app/cache.sqlite3")
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(path)
     conn.execute(SCHEMA)
