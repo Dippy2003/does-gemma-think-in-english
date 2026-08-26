@@ -51,7 +51,7 @@ happen. Any difference between Sinhala's and English's logit-lens pivot depth
 observed later in this project must be read against this number, not treated
 as pure evidence about the model's internal representation of language.
 
-## Headline finding (preliminary, n=4 of 100 probes)
+## Headline finding (preliminary, n=8 of 100 probes)
 
 `figures/pivot_layer_language.png` (once the full batch trace completes —
 see `results/PROBE_RESULTS_STATUS.md`) will show, layer by layer, what
@@ -59,11 +59,13 @@ fraction of Sinhala-prompt readouts decode to each Unicode script — the
 logit-lens analogue of Wendler et al.'s English-pivot curve. This is a
 correlational readout, not a causal claim; see `src/logit_lens.py`.
 
-Only 4 of 100 probe prompts have a completed trace in this repo's CPU-only
-development environment (see `docs/COMPUTE.md`). On those 4: **zero showed a
-stable pivot to Sinhala** (`src.pivot.detect_pivot`). Two stayed
-`latin`-script readouts nearly end to end; two started `sinhala`-script in
-early layers and degraded into unclassified tokens rather than settling on
-any script. Full details, and the reasons this is not yet a dataset-level
-claim, are in `paper/draft.md`'s Results and Limitations sections — read
-those before citing this number.
+8 of 100 probe prompts have a completed trace in this repo's CPU-only
+development environment (see `docs/COMPUTE.md`; each trace took ~3-4
+minutes). On those 8: **zero showed a stable pivot to Sinhala**
+(`src.pivot.detect_pivot`, `pivot_rate=0.0`). 6 of 8 stayed `latin`-script
+readouts nearly end to end; 2 of 8 started `sinhala`-script in early layers
+and degraded into unclassified tokens rather than settling on any script. No
+traced prompt showed the classic English-pivot-then-return-to-source pattern
+under this repo's strict pivot definition. Full details, and the reasons
+this is not yet a dataset-level claim, are in `paper/draft.md`'s Results and
+Limitations sections — read those before citing this number.
