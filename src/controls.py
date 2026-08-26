@@ -16,3 +16,13 @@ def tamil_condition() -> "list[dict]":
     return df[["id", "tamil", "answer_ta"]].rename(
         columns={"tamil": "prompt", "answer_ta": "answer"}
     ).to_dict("records")
+
+
+def english_identity_condition() -> "list[dict]":
+    """English prompt -> English answer. If the model doesn't pivot on its own
+    native language, the whole pivot-detection pipeline is broken, not the
+    model."""
+    df = load_probes()
+    return df[["id", "english", "answer_en"]].rename(
+        columns={"english": "prompt", "answer_en": "answer"}
+    ).to_dict("records")
