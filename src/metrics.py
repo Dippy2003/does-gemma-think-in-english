@@ -18,6 +18,11 @@ def fertility_comparison_table(fertility_dfs: dict[str, pd.DataFrame]) -> pd.Dat
     return pd.DataFrame(rows)
 
 
+def accuracy_curve(probe_results_df: pd.DataFrame) -> pd.DataFrame:
+    """Layer -> test accuracy, sorted, ready for plotting."""
+    return probe_results_df.sort_values("layer")[["layer", "test_accuracy"]]
+
+
 def per_language_distribution(df: pd.DataFrame, column: str = "tokens_per_word") -> pd.DataFrame:
     """Mean, std, min, max of a fertility column, grouped by language."""
     return df.groupby("language")[column].agg(["mean", "std", "min", "max"])
