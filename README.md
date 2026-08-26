@@ -19,3 +19,19 @@ Sinhala: does the same pivot appear, does it appear later and weaker, does it
 fail to cohere at all, or does the model pivot through a third, script- or
 lexically-adjacent language such as Hindi? Logit lens results are correlational
 only; the causal claims in this repo rest on activation patching.
+
+## Tokenizer fertility (control, not a finding)
+
+Mean tokens per word, per tokenizer and language, on the parallel corpora in
+`data/`:
+
+| tokenizer | en | si | ta |
+|---|---|---|---|
+| gemma-2 | 1.15 | 5.57 | 3.92 |
+| gpt-oss (o200k_harmony) | 1.18 | 3.56 | 3.15 |
+| qwen2.5 | 1.17 | 9.53 | 9.55 |
+
+Sinhala costs 3.6x–9.5x as many tokens per word as English, depending on the
+tokenizer. See `figures/fertility_bar_chart.png` and
+`figures/fertility_distribution_violin.png`. `meta-llama/Llama-3.2-1B`'s
+tokenizer could not be measured — see `results/fertility_llama-3.2_STATUS.md`.
