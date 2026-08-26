@@ -23,3 +23,17 @@ def english_twin_pair(sinhala_prompt: str, english_prompt: str) -> dict:
     """The clean/corrupt pairing used throughout this repo: a Sinhala prompt
     and its literal English translation, asking the same question."""
     return {"clean": sinhala_prompt, "corrupt": english_prompt}
+
+
+def patch_layer_at_position(model, corrupt_tokens, clean_cache, layer: int, position: int):
+    """Run the model on `corrupt_tokens`, but with `resid_post` at `layer`,
+    `position` overwritten with the value from a clean run's cache. Returns
+    the patched-run logits."""
+
+    def patch_hook(tensor, hook):
+        tensor[:, position, :] = clean_cache["resid_post", layer][:, position, :]
+        return tensor
+
+    return model.run_with_hooks(
+        corrupt_tokens, fwd_hooks=[(f"blocks.{layer}.hook_resid_post", patch_hook)]
+    )
