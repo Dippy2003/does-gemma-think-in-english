@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import cross_val_score
 
 
@@ -60,3 +61,8 @@ def weight_norms(results: dict) -> dict:
     language signal is at that layer — not a causal claim.
     """
     return {layer: float(np.linalg.norm(r["clf"].coef_)) for layer, r in results.items()}
+
+
+def layer_confusion_matrix(clf, X_layer_test, y_test):
+    y_pred = clf.predict(X_layer_test)
+    return confusion_matrix(y_test, y_pred, labels=clf.classes_)
