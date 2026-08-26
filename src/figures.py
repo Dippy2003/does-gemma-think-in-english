@@ -97,6 +97,21 @@ def script_by_layer_heatmap(script_dist_df):
     return fig
 
 
+def probe_accuracy_figure(accuracy_curve_df, baseline: float | None = None):
+    """Line plot of probe test accuracy per layer, with an optional baseline line."""
+    set_style()
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.plot(accuracy_curve_df["layer"], accuracy_curve_df["test_accuracy"], marker="o")
+    if baseline is not None:
+        ax.axhline(baseline, linestyle="--", color="gray", label=f"baseline ({baseline:.2f})")
+        ax.legend()
+    ax.set_xlabel("layer")
+    ax.set_ylabel("probe test accuracy")
+    ax.set_ylim(0, 1)
+    fig.tight_layout()
+    return fig
+
+
 def fertility_distribution_violin(df, value: str = "tokens_per_word"):
     """Violin plot of per-line fertility, split by language."""
     set_style()
