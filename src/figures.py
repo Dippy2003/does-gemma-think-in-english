@@ -39,6 +39,24 @@ def save_figure(fig, name: str, formats=("png", "pdf")) -> None:
         fig.savefig(f"figures/{name}.{fmt}", bbox_inches="tight")
 
 
+def layer_wise_language_plot(script_dist_df, ax=None):
+    """Stacked area plot: fraction of readouts per script, by layer."""
+    set_style()
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(8, 4))
+    else:
+        fig = ax.figure
+    colors = [SCRIPT_COLORS.get(c, "#999999") for c in script_dist_df.columns]
+    ax.stackplot(
+        script_dist_df.index, script_dist_df.T.values, labels=script_dist_df.columns, colors=colors
+    )
+    ax.set_xlabel("layer")
+    ax.set_ylabel("fraction of readouts")
+    ax.legend(loc="upper right", fontsize=8)
+    fig.tight_layout()
+    return fig
+
+
 def fertility_distribution_violin(df, value: str = "tokens_per_word"):
     """Violin plot of per-line fertility, split by language."""
     set_style()
