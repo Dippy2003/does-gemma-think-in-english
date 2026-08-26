@@ -52,3 +52,15 @@ def english_likeness_score(trace: Trace) -> list[float]:
     et al.'s "English pivot" curve actually looks like.
     """
     return [1.0 if lt.script == "latin" else 0.0 for lt in trace.layers]
+
+
+def aggregate_pivot_stats(traces: list[Trace], target_script: str) -> dict:
+    """Across many traces: how often a stable pivot occurs, and at what layer."""
+    pivots = [detect_pivot(t, target_script) for t in traces]
+    found = [p for p in pivots if p is not None]
+    return {
+        "n_traces": len(traces),
+        "n_with_pivot": len(found),
+        "pivot_rate": len(found) / len(traces) if traces else 0.0,
+        "mean_pivot_layer": sum(found) / len(found) if found else None,
+    }
