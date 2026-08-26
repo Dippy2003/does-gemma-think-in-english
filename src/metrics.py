@@ -69,6 +69,21 @@ def compare_to_logit_lens_pivot(causal_layer: int, logit_lens_pivot_layer) -> di
     }
 
 
+def placebo_summary(placebo_effects: list, real_effect: float) -> dict:
+    """Compare a set of placebo-control effects against the real patching
+    effect. Placebo effects should cluster near zero and well below the real
+    effect; if they don't, the patching methodology itself is suspect."""
+    import numpy as np
+
+    arr = np.asarray(placebo_effects, dtype=float)
+    return {
+        "placebo_mean": float(arr.mean()),
+        "placebo_max_abs": float(np.abs(arr).max()) if arr.size else 0.0,
+        "real_effect": real_effect,
+        "real_exceeds_placebo": bool(real_effect > (np.abs(arr).max() if arr.size else 0.0)),
+    }
+
+
 def cross_model_comparison(pivot_stats_by_model: dict) -> pd.DataFrame:
     """Combine aggregate_pivot_stats() results from multiple models into one table."""
     rows = []
