@@ -1,3 +1,4 @@
+import hashlib
 import sqlite3
 from pathlib import Path
 
@@ -17,3 +18,7 @@ def get_connection(path: str = "app/cache.sqlite3") -> sqlite3.Connection:
     conn.execute(SCHEMA)
     conn.commit()
     return conn
+
+
+def hash_prompt(prompt: str) -> str:
+    return hashlib.sha256(prompt.encode("utf-8")).hexdigest()
