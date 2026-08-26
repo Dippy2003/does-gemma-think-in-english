@@ -21,3 +21,13 @@ def load_all_results() -> dict:
         if Path(path).exists():
             out[name] = read_parquet(path)
     return out
+
+
+def summary_table(results: dict) -> "pd.DataFrame":
+    """One row per results artifact: name, row count, column list."""
+    import pandas as pd
+
+    rows = []
+    for name, df in results.items():
+        rows.append({"artifact": name, "n_rows": len(df), "columns": ", ".join(df.columns)})
+    return pd.DataFrame(rows)
