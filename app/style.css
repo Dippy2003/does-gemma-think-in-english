@@ -1,3 +1,8 @@
+/* System sans-serif fonts often lack Sinhala/Tamil glyph coverage and
+   render conjuncts as tofu boxes; Noto's script-specific faces cover them. */
+.token, .script-sinhala, .script-tamil, .script-devanagari {
+  font-family: "Noto Sans Sinhala", "Noto Sans Tamil", "Noto Sans Devanagari", sans-serif;
+}
 .script-sinhala { color: #d95f02; font-weight: 600; }
 .script-tamil { color: #1b9e77; font-weight: 600; }
 .script-latin { color: #7570b3; }
