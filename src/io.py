@@ -17,6 +17,23 @@ def read_done_ids(jsonl_path: str | Path) -> set:
     return ids
 
 
+def traces_jsonl_to_parquet(jsonl_path: str | Path, parquet_path: str | Path) -> pd.DataFrame:
+    """Flatten a batch-trace .jsonl file (one row per prompt, layers nested) into
+    a long-format parquet table (one row per prompt x layer)."""
+    import json
+
+    rows = []
+    for line in Path(jsonl_path).read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        rec = json.loads(line)
+        for layer in rec["layers"]:
+            rows.append({"id": rec["id"], "prompt": rec["prompt"], **layer})
+    df = pd.DataFrame(rows)
+    write_parquet(df, parquet_path)
+    return df
+
+
 def write_parquet(df: pd.DataFrame, path: str | Path) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(path, index=False)
