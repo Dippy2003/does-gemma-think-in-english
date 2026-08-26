@@ -85,3 +85,8 @@ def print_trace_table(trace: Trace) -> None:
     print(f"{'layer':>5}  {'token':<20}  {'script':<12}  {'prob':>6}")
     for lt in trace.layers:
         print(f"{lt.layer:>5}  {lt.token[:20]:<20}  {lt.script:<12}  {lt.prob:>6.3f}")
+
+
+def script_sequence(trace: Trace) -> list[str]:
+    """The per-layer script labels only, e.g. ['other', 'latin', ..., 'sinhala']."""
+    return [lt.script for lt in trace.layers]
