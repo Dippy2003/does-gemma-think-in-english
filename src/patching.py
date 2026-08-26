@@ -71,3 +71,28 @@ class PatchResult:
         if span == 0:
             return 0.0
         return (self.patched_logit_diff - self.corrupt_logit_diff) / span
+
+
+def layer_sweep(
+    model, clean_tokens, corrupt_tokens, clean_cache, position, correct_id, incorrect_id
+) -> list[PatchResult]:
+    """Patch every layer at a fixed position, one at a time."""
+    clean_logits = model(clean_tokens)
+    corrupt_logits = model(corrupt_tokens)
+    clean_ld = logit_diff(clean_logits, position, correct_id, incorrect_id)
+    corrupt_ld = logit_diff(corrupt_logits, position, correct_id, incorrect_id)
+
+    results = []
+    for layer in range(model.cfg.n_layers):
+        patched_logits = patch_layer_at_position(model, corrupt_tokens, clean_cache, layer, position)
+        patched_ld = logit_diff(patched_logits, position, correct_id, incorrect_id)
+        results.append(
+            PatchResult(
+                layer=layer,
+                position=position,
+                clean_logit_diff=clean_ld,
+                corrupt_logit_diff=corrupt_ld,
+                patched_logit_diff=patched_ld,
+            )
+        )
+    return results
