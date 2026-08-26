@@ -1,18 +1,19 @@
+SCRIPT_RANGES = (
+    (0x0D80, 0x0DFF, "sinhala"),
+    (0x0B80, 0x0BFF, "tamil"),
+    (0x0900, 0x097F, "devanagari"),
+    (0x0600, 0x06FF, "arabic"),
+    (0x4E00, 0x9FFF, "han"),
+    (0x0041, 0x007A, "latin"),
+)
+
+
 def script_of(s: str) -> str:
     for ch in s:
         cp = ord(ch)
-        if 0x0D80 <= cp <= 0x0DFF:
-            return "sinhala"
-        if 0x0B80 <= cp <= 0x0BFF:
-            return "tamil"
-        if 0x0900 <= cp <= 0x097F:
-            return "devanagari"
-        if 0x0600 <= cp <= 0x06FF:
-            return "arabic"
-        if 0x4E00 <= cp <= 0x9FFF:
-            return "han"
-        if 0x0041 <= cp <= 0x007A:
-            return "latin"
+        for lo, hi, name in SCRIPT_RANGES:
+            if lo <= cp <= hi:
+                return name
     return "other"
 
 
