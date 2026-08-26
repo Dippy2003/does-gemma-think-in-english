@@ -22,3 +22,8 @@ def train_all_layers(X: np.ndarray, y, train_idx, test_idx) -> dict:
         acc = clf.score(X[layer][test_idx], np.array(y)[test_idx])
         results[layer] = {"clf": clf, "test_accuracy": acc}
     return results
+
+
+def probe_accuracy_by_layer(results: dict) -> dict:
+    """Flatten train_all_layers() output to {layer: test_accuracy}."""
+    return {layer: r["test_accuracy"] for layer, r in results.items()}
