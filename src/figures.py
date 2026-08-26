@@ -81,6 +81,17 @@ def pivot_histogram(pivot_layers: list):
     return fig
 
 
+def script_by_layer_heatmap(script_dist_df):
+    """Heatmap: rows = script, columns = layer, values = readout fraction."""
+    set_style()
+    fig, ax = plt.subplots(figsize=(10, 3))
+    sns.heatmap(script_dist_df.T, cmap="viridis", ax=ax, cbar_kws={"label": "fraction"})
+    ax.set_xlabel("layer")
+    ax.set_ylabel("script")
+    fig.tight_layout()
+    return fig
+
+
 def fertility_distribution_violin(df, value: str = "tokens_per_word"):
     """Violin plot of per-line fertility, split by language."""
     set_style()
