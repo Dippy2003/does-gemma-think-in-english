@@ -2,9 +2,14 @@
 
 Linear decodability answers a narrower question than the logit lens: not
 "what would the output head produce," but "does a simple linear function of
-this layer's activations separate languages at all." A probe finding high
-accuracy is still not a causal claim about what the model relies on — see
-src/patching.py.
+this layer's activations separate languages at all." Finding that a probe
+achieves high accuracy at layer N means the language signal is *present* and
+*linearly readable* in that layer's residual stream — it does not mean the
+model *uses* that signal to produce its output. A feature can be linearly
+decodable and causally irrelevant (the network could compute the actual
+output from an entirely different, non-linear combination of other
+directions). The gap between "linearly decodable" and "causally relied upon"
+is exactly the gap that src/patching.py is built to close.
 """
 
 import numpy as np
