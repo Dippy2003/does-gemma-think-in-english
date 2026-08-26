@@ -5,6 +5,7 @@ import gradio as gr
 from app.cache import get_connection, get_or_compute
 from app.render import render_layer_stack, render_tokenization_strip
 from app.trace import trace_prompt
+from src.fertility import tokens_per_word
 from src.model import get_device, load_model
 
 MAX_INPUT_CHARS = 500
@@ -66,7 +67,11 @@ def run_trace(prompt: str):
     layer_html = render_layer_stack(result["layers"])
     pivot = result["pivot_layer"]
     callout = f"switches to Sinhala at layer {pivot}" if pivot is not None else "no stable pivot detected"
-    return callout, render_tokenization_strip(tokens), layer_html
+    fertility_note = ""
+    if model is not None:
+        tpw = tokens_per_word(prompt, model.tokenizer)
+        fertility_note = f"{len(tokens)} tokens for {len(prompt.split())} words ({tpw:.1f} tokens/word)"
+    return callout, render_tokenization_strip(tokens), layer_html + f"<p>{fertility_note}</p>"
 
 
 with gr.Blocks(title="Does Gemma think in English?", css="app/style.css") as demo:
