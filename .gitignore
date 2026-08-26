@@ -20,3 +20,10 @@ models--*/
 
 .env
 .DS_Store
+
+# notebook execution artifacts and HF hub cache
+notebooks/*.nbconvert.ipynb
+.hf_cache/
+huggingface_hub/
+wandb/
+
