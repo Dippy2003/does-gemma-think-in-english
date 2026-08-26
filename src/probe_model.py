@@ -33,6 +33,13 @@ def probe_accuracy_by_layer(results: dict) -> dict:
     return {layer: r["test_accuracy"] for layer, r in results.items()}
 
 
+def probe_accuracy_summary(results: dict) -> dict:
+    """Mean/std/min/max across layers, via the shared metrics helper."""
+    from src.metrics import summarize_scores
+
+    return summarize_scores(list(probe_accuracy_by_layer(results).values()))
+
+
 def random_baseline_accuracy(y) -> float:
     """Accuracy of predicting the majority class, ignoring activations entirely.
 
@@ -71,7 +78,9 @@ def layer_confusion_matrix(clf, X_layer_test, y_test):
     return confusion_matrix(y_test, y_pred, labels=clf.classes_)
 
 
-def bootstrap_ci(cv_scores: np.ndarray, n_boot: int = 2000, ci: float = 0.95, seed: int = 0) -> dict:
+def bootstrap_ci(
+    cv_scores: np.ndarray, n_boot: int = 2000, ci: float = 0.95, seed: int = 0
+) -> dict:
     rng = np.random.default_rng(seed)
     boot_means = [rng.choice(cv_scores, size=len(cv_scores), replace=True).mean() for _ in range(n_boot)]
     lo = (1 - ci) / 2 * 100

@@ -28,6 +28,22 @@ def per_language_distribution(df: pd.DataFrame, column: str = "tokens_per_word")
     return df.groupby("language")[column].agg(["mean", "std", "min", "max"])
 
 
+def summarize_scores(scores) -> dict:
+    """Mean/std/min/max of a 1D array of scores — shared by fertility,
+    probe-accuracy, and patching-effect summaries so each module doesn't
+    reimplement the same five-line aggregation."""
+    import numpy as np
+
+    arr = np.asarray(scores, dtype=float)
+    return {
+        "mean": float(arr.mean()),
+        "std": float(arr.std()),
+        "min": float(arr.min()),
+        "max": float(arr.max()),
+        "n": int(arr.size),
+    }
+
+
 def cross_model_comparison(pivot_stats_by_model: dict) -> pd.DataFrame:
     """Combine aggregate_pivot_stats() results from multiple models into one table."""
     rows = []
