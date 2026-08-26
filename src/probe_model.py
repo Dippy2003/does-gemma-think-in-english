@@ -27,3 +27,15 @@ def train_all_layers(X: np.ndarray, y, train_idx, test_idx) -> dict:
 def probe_accuracy_by_layer(results: dict) -> dict:
     """Flatten train_all_layers() output to {layer: test_accuracy}."""
     return {layer: r["test_accuracy"] for layer, r in results.items()}
+
+
+def random_baseline_accuracy(y) -> float:
+    """Accuracy of predicting the majority class, ignoring activations entirely.
+
+    Any layer's probe accuracy must clear this, not 1/n_classes, since
+    real-world label distributions are rarely uniform.
+    """
+    y = np.array(y)
+    values, counts = np.unique(y, return_counts=True)
+    majority = values[np.argmax(counts)]
+    return float(np.mean(y == majority))
