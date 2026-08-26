@@ -52,3 +52,18 @@ def fragmentation_ratio(text: str, tokenizer, baseline_tokens_per_word: float = 
     if baseline_tokens_per_word == 0:
         return float("nan")
     return tpw / baseline_tokens_per_word
+
+
+def byte_fallback_rate(text: str, tokenizer) -> float:
+    """Fraction of tokens that are raw byte-fallback tokens (e.g. `<0x0D>`).
+
+    A high rate on Sinhala/Tamil text means the tokenizer's vocabulary lacks
+    dedicated subword tokens for that script and is falling back to encoding
+    UTF-8 bytes one at a time — the most extreme form of fragmentation.
+    """
+    ids = tokenizer.encode(text, add_special_tokens=False)
+    if not ids:
+        return 0.0
+    pieces = tokenizer.convert_ids_to_tokens(ids)
+    n_byte_fallback = sum(1 for p in pieces if p.startswith("<0x") and p.endswith(">"))
+    return n_byte_fallback / len(pieces)
