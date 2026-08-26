@@ -77,7 +77,12 @@ with gr.Blocks(title="Does Gemma think in English?", css="app/style.css") as dem
     strip_out = gr.HTML(label="Tokenization")
     stack_out = gr.HTML(label="Layer stack")
     btn.click(run_trace, inputs=inp, outputs=[pivot_out, strip_out, stack_out])
-    gr.Examples(examples=[[ex["sinhala"]] for ex in EXAMPLES], inputs=inp)
+    gr.Examples(
+        examples=[[ex["sinhala"]] for ex in EXAMPLES],
+        inputs=inp,
+        label="Example sentences (click to run)",
+        examples_per_page=10,
+    )
 
 if __name__ == "__main__":
     demo.launch()
