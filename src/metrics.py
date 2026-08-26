@@ -55,6 +55,20 @@ def causal_bottleneck_layer(agg_effects: pd.DataFrame) -> int:
     return int(agg_effects.loc[agg_effects["mean"].idxmax(), "layer"])
 
 
+def compare_to_logit_lens_pivot(causal_layer: int, logit_lens_pivot_layer) -> dict:
+    """How far apart the causal bottleneck (patching) and the correlational
+    pivot (logit lens) are — the single most important sanity check in this
+    repo. A large gap means the readout and the actual causal mechanism
+    disagree about where the "decision" happens."""
+    if logit_lens_pivot_layer is None:
+        return {"causal_layer": causal_layer, "logit_lens_pivot_layer": None, "gap": None}
+    return {
+        "causal_layer": causal_layer,
+        "logit_lens_pivot_layer": logit_lens_pivot_layer,
+        "gap": causal_layer - logit_lens_pivot_layer,
+    }
+
+
 def cross_model_comparison(pivot_stats_by_model: dict) -> pd.DataFrame:
     """Combine aggregate_pivot_stats() results from multiple models into one table."""
     rows = []
