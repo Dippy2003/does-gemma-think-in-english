@@ -13,6 +13,9 @@ class FakeModel:
     def to_tokens(self, prompt):
         return [[1, 2, 3]]
 
+    def to_str_tokens(self, prompt):
+        return list(prompt)
+
     def run_with_cache(self, tokens):
         return None, {}
 
