@@ -44,3 +44,11 @@ def batch_fertility(lines: list[str], tokenizer, language: str, tokenizer_name: 
             }
         )
     return pd.DataFrame(rows)
+
+
+def fragmentation_ratio(text: str, tokenizer, baseline_tokens_per_word: float = 1.3) -> float:
+    """How many times more fragmented this text is than a rough English baseline."""
+    tpw = tokens_per_word(text, tokenizer)
+    if baseline_tokens_per_word == 0:
+        return float("nan")
+    return tpw / baseline_tokens_per_word
