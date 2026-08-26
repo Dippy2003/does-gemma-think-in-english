@@ -1,0 +1,20 @@
+[
+  {
+    "artifact": "fertility_gemma-2",
+    "model": "gemma-2",
+    "git_commit": "956fd41d0e0d38dc3109f2e82c2c1872ebbe899c",
+    "n_rows": 30
+  },
+  {
+    "artifact": "fertility_qwen2.5",
+    "model": "qwen2.5",
+    "git_commit": "956fd41d0e0d38dc3109f2e82c2c1872ebbe899c",
+    "n_rows": 30
+  },
+  {
+    "artifact": "fertility_gpt-oss",
+    "model": "gpt-oss",
+    "git_commit": "956fd41d0e0d38dc3109f2e82c2c1872ebbe899c",
+    "n_rows": 30
+  }
+]
