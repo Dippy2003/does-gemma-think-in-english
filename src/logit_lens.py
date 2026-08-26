@@ -23,3 +23,13 @@ def sweep_layers(model, cache, position: int = -1) -> list[str]:
     """Decode every layer's resid_post at `position`, layer 0 to n_layers-1."""
     stacked = resid_post_stack(cache, model.cfg.n_layers)
     return [decode_layer(model, stacked[layer], position) for layer in range(model.cfg.n_layers)]
+
+
+def decode_layer_topk(model, resid_layer, position: int = -1, k: int = 5):
+    normed = apply_final_ln(model, resid_layer)
+    logits = unembed(model, normed)
+    top = logits[0, position].topk(k)
+    return [
+        (model.to_single_str_token(idx.item()), score.item())
+        for idx, score in zip(top.indices, top.values)
+    ]
