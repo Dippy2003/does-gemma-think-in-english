@@ -91,25 +91,36 @@ class PatchResult:
 def layer_sweep(
     model, clean_tokens, corrupt_tokens, clean_cache, position, correct_id, incorrect_id
 ) -> list[PatchResult]:
-    """Patch every layer at a fixed position, one at a time."""
-    clean_logits = model(clean_tokens)
-    corrupt_logits = model(corrupt_tokens)
-    clean_ld = logit_diff(clean_logits, position, correct_id, incorrect_id)
-    corrupt_ld = logit_diff(corrupt_logits, position, correct_id, incorrect_id)
+    """Patch every layer at a fixed position, one at a time.
 
-    results = []
-    for layer in range(model.cfg.n_layers):
-        patched_logits = patch_layer_at_position(model, corrupt_tokens, clean_cache, layer, position)
-        patched_ld = logit_diff(patched_logits, position, correct_id, incorrect_id)
-        results.append(
-            PatchResult(
-                layer=layer,
-                position=position,
-                clean_logit_diff=clean_ld,
-                corrupt_logit_diff=corrupt_ld,
-                patched_logit_diff=patched_ld,
+    Runs under torch.no_grad(): none of this needs gradients, and without it
+    every one of the n_layers forward passes below builds and retains an
+    autograd graph, multiplying peak memory by roughly n_layers for no
+    benefit.
+    """
+    import torch
+
+    with torch.no_grad():
+        clean_logits = model(clean_tokens)
+        corrupt_logits = model(corrupt_tokens)
+        clean_ld = logit_diff(clean_logits, position, correct_id, incorrect_id)
+        corrupt_ld = logit_diff(corrupt_logits, position, correct_id, incorrect_id)
+
+        results = []
+        for layer in range(model.cfg.n_layers):
+            patched_logits = patch_layer_at_position(
+                model, corrupt_tokens, clean_cache, layer, position
             )
-        )
+            patched_ld = logit_diff(patched_logits, position, correct_id, incorrect_id)
+            results.append(
+                PatchResult(
+                    layer=layer,
+                    position=position,
+                    clean_logit_diff=clean_ld,
+                    corrupt_logit_diff=corrupt_ld,
+                    patched_logit_diff=patched_ld,
+                )
+            )
     return results
 
 
