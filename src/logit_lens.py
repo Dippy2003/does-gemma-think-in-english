@@ -7,7 +7,7 @@ happens to be. Only activation patching (src/patching.py) supports a causal
 claim about what the model actually relies on.
 """
 
-from src.hooks import apply_final_ln, unembed
+from src.hooks import apply_final_ln, resid_post_stack, unembed
 from src.scripts import script_of
 
 
@@ -17,3 +17,9 @@ def decode_layer(model, resid_layer, position: int = -1):
     logits = unembed(model, normed)
     token_id = logits[0, position].argmax().item()
     return model.to_single_str_token(token_id)
+
+
+def sweep_layers(model, cache, position: int = -1) -> list[str]:
+    """Decode every layer's resid_post at `position`, layer 0 to n_layers-1."""
+    stacked = resid_post_stack(cache, model.cfg.n_layers)
+    return [decode_layer(model, stacked[layer], position) for layer in range(model.cfg.n_layers)]
