@@ -5,7 +5,10 @@ from sklearn.model_selection import cross_val_score
 
 
 def fit_probe(X_train, y_train, max_iter: int = 1000) -> LogisticRegression:
-    clf = LogisticRegression(max_iter=max_iter)
+    """Fit with class_weight='balanced' — the probe set's categories are not
+    evenly sized (see data/README.md), and an unweighted probe can reach high
+    accuracy by just predicting the majority class."""
+    clf = LogisticRegression(max_iter=max_iter, class_weight="balanced")
     clf.fit(X_train, y_train)
     return clf
 
