@@ -34,6 +34,16 @@ def shuffled_prompt_condition(seed: int = 0) -> "list[dict]":
     return rows
 
 
+def shuffled_label_probe_control(y: list, seed: int = 0) -> list:
+    """Permute labels independent of activations. A probe that beats chance
+    on this can only be overfitting or leaking — there is no real signal for
+    it to have found, by construction."""
+    rng = random.Random(seed)
+    shuffled = list(y)
+    rng.shuffle(shuffled)
+    return shuffled
+
+
 def english_identity_condition() -> "list[dict]":
     """English prompt -> English answer. If the model doesn't pivot on its own
     native language, the whole pivot-detection pipeline is broken, not the
