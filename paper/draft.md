@@ -84,3 +84,39 @@ English-to-English identity, shuffled-prompt, shuffled-label probe, placebo
 patching (unrelated layers, random directions, cross-prompt activations),
 and cross-model replication — see `docs/CONTROLS.md` for the rationale
 behind each.
+
+## Results (preliminary, n=4 of 100 probes)
+
+This repo's development environment is CPU-only (no CUDA build of torch, 4GB
+laptop GPU — see `docs/COMPUTE.md`), and a single 26-layer logit-lens trace
+on `gemma-2-2b` takes on the order of minutes there. Only 4 of the 100 probe
+prompts had completed a full batch trace (`results/traces.jsonl`) at the time
+of this writeup; the figures and full-dataset statistics described elsewhere
+in this repo (`README.md` "Headline figure", `results/PROBE_RESULTS_STATUS.md`,
+`results/PATCHING_RESULTS_STATUS.md`) are pending completion of that batch
+run and are not yet backed by data. What follows is reported honestly as a
+preliminary read on 4 prompts, not a dataset-level finding.
+
+Running `detect_pivot(target_script="sinhala")` (a *stable* switch to Sinhala
+that persists through the final layer) on these 4 traces found **zero**
+stable pivots to Sinhala. Two distinct patterns appeared instead:
+
+- 2 of 4 prompts: the readout stays `latin`-script for nearly the entire
+  layer stack, decaying into unclassified ("other") tokens only in the last
+  few layers — consistent with Outcome 1 (English-pivot) *without* a
+  detectable return to Sinhala at the output, at least under this repo's
+  strict pivot definition.
+- 2 of 4 prompts: the readout starts `sinhala`-script in the earliest
+  layers, but degrades into unclassified ("other") tokens for the rest of
+  the network rather than settling into either `latin` or `sinhala` — a
+  diffuse, non-coherent readout consistent with Outcome 2 in this repo's
+  framing (`README.md`), and worth flagging since Outcome 2 was predicted
+  as the most likely result for a low-resource, heavily fragmented script
+  going in.
+
+**This is not a dataset-level claim.** n=4 is far too small to distinguish a
+real pattern from noise, and no controls (Phase 16/24) or activation
+patching (the only causal method in this repo) have been run against these 4
+traces. It is reported here only because the honesty rule governing this
+repo (`MASTER_PROMPT.md`) requires reporting what was actually run, not
+projecting what the full run would likely show.
