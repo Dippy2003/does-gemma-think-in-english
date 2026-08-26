@@ -29,3 +29,13 @@ def fertility_bar_chart(table, value: str = "tokens_per_word"):
     ax.legend(title="language")
     fig.tight_layout()
     return fig
+
+
+def fertility_distribution_violin(df, value: str = "tokens_per_word"):
+    """Violin plot of per-line fertility, split by language."""
+    set_style()
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.violinplot(data=df, x="language", y=value, ax=ax)
+    ax.set_ylabel(value.replace("_", " "))
+    fig.tight_layout()
+    return fig
