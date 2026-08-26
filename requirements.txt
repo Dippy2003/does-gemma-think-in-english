@@ -1,0 +1,15 @@
+torch
+transformers
+transformer-lens
+scikit-learn
+numpy
+pandas
+pyarrow
+scipy
+matplotlib
+seaborn
+sentencepiece
+accelerate
+gradio
+pytest
+ruff
