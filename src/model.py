@@ -52,3 +52,15 @@ def load_with_fallback(role: str = "primary", dtype: str | None = None) -> Hooke
             raise
         print(f"failed to load {name} ({e}); falling back to {MODEL_REGISTRY['fallback']}")
         return load_with_fallback("fallback", dtype=dtype)
+
+
+def report_config(model: HookedTransformer) -> dict:
+    return {
+        "model_name": model.cfg.model_name,
+        "n_layers": model.cfg.n_layers,
+        "d_model": model.cfg.d_model,
+        "n_heads": model.cfg.n_heads,
+        "n_ctx": model.cfg.n_ctx,
+        "device": str(model.cfg.device),
+        "dtype": str(model.cfg.dtype),
+    }
