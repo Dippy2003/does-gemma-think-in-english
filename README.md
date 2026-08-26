@@ -20,6 +20,14 @@ fail to cohere at all, or does the model pivot through a third, script- or
 lexically-adjacent language such as Hindi? Logit lens results are correlational
 only; the causal claims in this repo rest on activation patching.
 
+## Full results
+
+`results/manifest.json` records provenance (model, git commit, row count)
+for every results artifact. `scripts/summarize_results.py` prints a table of
+whatever artifacts currently exist on disk. See `results/PROBE_RESULTS_STATUS.md`
+and `results/PATCHING_RESULTS_STATUS.md` for the status of results still
+pending a full run in this repo's verified CPU execution environment.
+
 ## Tokenizer fertility (control, not a finding)
 
 Mean tokens per word, per tokenizer and language, on the parallel corpora in
