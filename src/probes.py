@@ -35,3 +35,11 @@ def train_test_split_by_prompt(
     train_idx = [i for i, pid in enumerate(prompt_ids) if pid not in test_ids]
     test_idx = [i for i, pid in enumerate(prompt_ids) if pid in test_ids]
     return train_idx, test_idx
+
+
+def standardize(train: np.ndarray, test: np.ndarray) -> tuple:
+    """Fit mean/std on train only, apply to both — avoids test-set leakage
+    into the standardization statistics."""
+    mean = train.mean(axis=0, keepdims=True)
+    std = train.std(axis=0, keepdims=True) + 1e-8
+    return (train - mean) / std, (test - mean) / std
