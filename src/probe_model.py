@@ -39,3 +39,14 @@ def random_baseline_accuracy(y) -> float:
     values, counts = np.unique(y, return_counts=True)
     majority = values[np.argmax(counts)]
     return float(np.mean(y == majority))
+
+
+def probe_results_to_dataframe(results: dict, model_name: str = "gemma-2") -> "pd.DataFrame":
+    import pandas as pd
+
+    return pd.DataFrame(
+        [
+            {"model": model_name, "layer": layer, "test_accuracy": r["test_accuracy"]}
+            for layer, r in results.items()
+        ]
+    )
