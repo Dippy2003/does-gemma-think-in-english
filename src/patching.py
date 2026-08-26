@@ -37,3 +37,12 @@ def patch_layer_at_position(model, corrupt_tokens, clean_cache, layer: int, posi
     return model.run_with_hooks(
         corrupt_tokens, fwd_hooks=[(f"blocks.{layer}.hook_resid_post", patch_hook)]
     )
+
+
+def logit_diff(logits, position: int, correct_token_id: int, incorrect_token_id: int) -> float:
+    """logit(correct) - logit(incorrect) at `position` — the standard patching
+    metric: positive means the model favors the correct answer, and the
+    magnitude of the *change* in this value from patching is the patch effect."""
+    return (
+        logits[0, position, correct_token_id] - logits[0, position, incorrect_token_id]
+    ).item()
