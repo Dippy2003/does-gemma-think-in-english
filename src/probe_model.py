@@ -1,4 +1,6 @@
+import numpy as np
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
 
 
 def fit_probe(X_train, y_train, max_iter: int = 1000) -> LogisticRegression:
@@ -7,10 +9,13 @@ def fit_probe(X_train, y_train, max_iter: int = 1000) -> LogisticRegression:
     return clf
 
 
-def train_all_layers(X: "np.ndarray", y, train_idx, test_idx) -> dict:
-    """Train one probe per layer. X: [n_layers, n_examples, d_model]."""
-    import numpy as np
+def cross_validated_accuracy(X_layer: np.ndarray, y, cv: int = 5) -> np.ndarray:
+    clf = LogisticRegression(max_iter=1000)
+    return cross_val_score(clf, X_layer, y, cv=cv)
 
+
+def train_all_layers(X: np.ndarray, y, train_idx, test_idx) -> dict:
+    """Train one probe per layer. X: [n_layers, n_examples, d_model]."""
     results = {}
     for layer in range(X.shape[0]):
         clf = fit_probe(X[layer][train_idx], np.array(y)[train_idx])
