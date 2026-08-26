@@ -57,6 +57,19 @@ def layer_wise_language_plot(script_dist_df, ax=None):
     return fig
 
 
+def multi_language_overlay_plot(curves: dict):
+    """Overlay english-likeness (or similar) curves for multiple prompt languages."""
+    set_style()
+    fig, ax = plt.subplots(figsize=(8, 4))
+    for label, series in curves.items():
+        ax.plot(range(len(series)), series, marker="o", markersize=3, label=label)
+    ax.set_xlabel("layer")
+    ax.set_ylabel("score")
+    ax.legend()
+    fig.tight_layout()
+    return fig
+
+
 def fertility_distribution_violin(df, value: str = "tokens_per_word"):
     """Violin plot of per-line fertility, split by language."""
     set_style()
