@@ -70,6 +70,17 @@ def multi_language_overlay_plot(curves: dict):
     return fig
 
 
+def pivot_histogram(pivot_layers: list):
+    """Histogram of detected pivot layers across the probe set."""
+    set_style()
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.hist([p for p in pivot_layers if p is not None], bins=20, color="#7570b3")
+    ax.set_xlabel("pivot layer")
+    ax.set_ylabel("count")
+    fig.tight_layout()
+    return fig
+
+
 def fertility_distribution_violin(df, value: str = "tokens_per_word"):
     """Violin plot of per-line fertility, split by language."""
     set_style()
