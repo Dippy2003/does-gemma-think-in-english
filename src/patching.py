@@ -32,6 +32,21 @@ def english_twin_pair(sinhala_prompt: str, english_prompt: str) -> dict:
     return {"clean": sinhala_prompt, "corrupt": english_prompt}
 
 
+def patch_positions_at_layer(
+    model, corrupt_tokens, clean_cache, layer: int, positions: list[int]
+):
+    """Patch several positions at once, at a single layer."""
+
+    def patch_hook(tensor, hook):
+        for pos in positions:
+            tensor[:, pos, :] = clean_cache["resid_post", layer][:, pos, :]
+        return tensor
+
+    return model.run_with_hooks(
+        corrupt_tokens, fwd_hooks=[(f"blocks.{layer}.hook_resid_post", patch_hook)]
+    )
+
+
 def patch_layer_at_position(model, corrupt_tokens, clean_cache, layer: int, position: int):
     """Run the model on `corrupt_tokens`, but with `resid_post` at `layer`,
     `position` overwritten with the value from a clean run's cache. Returns
