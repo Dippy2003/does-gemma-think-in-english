@@ -10,6 +10,13 @@ MODEL_REGISTRY = {
 }
 
 
+def check_hf_token() -> bool:
+    """Whether HF_TOKEN is set — call before loading a gated model so a
+    missing token surfaces as a clear message instead of a 403 traceback
+    from deep inside transformers."""
+    return bool(os.environ.get("HF_TOKEN"))
+
+
 def get_device() -> str:
     if torch.cuda.is_available():
         return "cuda"
@@ -25,6 +32,12 @@ def select_dtype(device: str, vram_gb: float | None = None) -> str:
 
 
 def load_model(name: str = "gemma-2-2b", dtype: str | None = None) -> HookedTransformer:
+    if "gemma" in name.lower() and not check_hf_token():
+        print(
+            "warning: HF_TOKEN is not set. gemma-2-2b is a gated model — "
+            "accept the license at https://huggingface.co/google/gemma-2-2b "
+            "and set HF_TOKEN, or this call will fail with a GatedRepoError."
+        )
     device = get_device()
     if dtype is None:
         vram_gb = None
