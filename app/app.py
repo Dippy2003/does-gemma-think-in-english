@@ -77,7 +77,7 @@ def run_trace(prompt: str):
     return callout, render_tokenization_strip(tokens), layer_html + f"<p>{fertility_note}</p>"
 
 
-with gr.Blocks(title="Does Gemma think in English?", css="app/style.css") as demo:
+with gr.Blocks(title="Does Gemma think in English?") as demo:
     gr.Markdown("# Does a multilingual LLM pivot through English when prompted in Sinhala?")
     inp = gr.Textbox(label="Sinhala sentence", max_lines=3)
     btn = gr.Button("Trace")
@@ -93,4 +93,4 @@ with gr.Blocks(title="Does Gemma think in English?", css="app/style.css") as dem
     )
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(css_paths=["app/style.css"])
