@@ -7,6 +7,8 @@ happens to be. Only activation patching (src/patching.py) supports a causal
 claim about what the model actually relies on.
 """
 
+import torch
+
 from src.hooks import apply_final_ln, resid_post_stack, unembed
 from src.scripts import script_of
 
@@ -33,3 +35,10 @@ def decode_layer_topk(model, resid_layer, position: int = -1, k: int = 5):
         (model.to_single_str_token(idx.item()), score.item())
         for idx, score in zip(top.indices, top.values)
     ]
+
+
+def layer_probabilities(model, resid_layer, position: int = -1) -> torch.Tensor:
+    """Softmax probability distribution over the vocabulary at one layer."""
+    normed = apply_final_ln(model, resid_layer)
+    logits = unembed(model, normed)
+    return torch.softmax(logits[0, position], dim=-1)
