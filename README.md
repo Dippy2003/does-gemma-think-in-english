@@ -44,17 +44,26 @@ tokenizer. See `figures/fertility_bar_chart.png` and
 `figures/fertility_distribution_violin.png`. `meta-llama/Llama-3.2-1B`'s
 tokenizer could not be measured — see `results/fertility_llama-3.2_STATUS.md`.
 
-## Headline figure
-
-`figures/pivot_layer_language.png` shows, layer by layer, what fraction of
-Sinhala-prompt readouts decode to each Unicode script — the logit-lens
-analogue of Wendler et al.'s English-pivot curve, generated from
-`results/traces.parquet` (Phase 17+). This is a correlational readout, not a
-causal claim; see the note above and `src/logit_lens.py`.
-
 **This is a confound, not a finding.** Higher fertility means the model has
 more sequence positions to process the same content — more layers of residual
 stream in which a pivot could, mechanically, have more room to happen or not
 happen. Any difference between Sinhala's and English's logit-lens pivot depth
 observed later in this project must be read against this number, not treated
 as pure evidence about the model's internal representation of language.
+
+## Headline finding (preliminary, n=4 of 100 probes)
+
+`figures/pivot_layer_language.png` (once the full batch trace completes —
+see `results/PROBE_RESULTS_STATUS.md`) will show, layer by layer, what
+fraction of Sinhala-prompt readouts decode to each Unicode script — the
+logit-lens analogue of Wendler et al.'s English-pivot curve. This is a
+correlational readout, not a causal claim; see `src/logit_lens.py`.
+
+Only 4 of 100 probe prompts have a completed trace in this repo's CPU-only
+development environment (see `docs/COMPUTE.md`). On those 4: **zero showed a
+stable pivot to Sinhala** (`src.pivot.detect_pivot`). Two stayed
+`latin`-script readouts nearly end to end; two started `sinhala`-script in
+early layers and degraded into unclassified tokens rather than settling on
+any script. Full details, and the reasons this is not yet a dataset-level
+claim, are in `paper/draft.md`'s Results and Limitations sections — read
+those before citing this number.
