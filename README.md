@@ -35,3 +35,10 @@ Sinhala costs 3.6x–9.5x as many tokens per word as English, depending on the
 tokenizer. See `figures/fertility_bar_chart.png` and
 `figures/fertility_distribution_violin.png`. `meta-llama/Llama-3.2-1B`'s
 tokenizer could not be measured — see `results/fertility_llama-3.2_STATUS.md`.
+
+**This is a confound, not a finding.** Higher fertility means the model has
+more sequence positions to process the same content — more layers of residual
+stream in which a pivot could, mechanically, have more room to happen or not
+happen. Any difference between Sinhala's and English's logit-lens pivot depth
+observed later in this project must be read against this number, not treated
+as pure evidence about the model's internal representation of language.
