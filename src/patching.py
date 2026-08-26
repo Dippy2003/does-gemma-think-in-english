@@ -17,3 +17,9 @@ def clean_corrupt_pair(model, clean_prompt: str, corrupt_prompt: str):
     clean_tokens, clean_logits, clean_cache = run_with_cache(model, clean_prompt)
     corrupt_tokens, corrupt_logits, corrupt_cache = run_with_cache(model, corrupt_prompt)
     return clean_logits, clean_cache, corrupt_logits, corrupt_cache
+
+
+def english_twin_pair(sinhala_prompt: str, english_prompt: str) -> dict:
+    """The clean/corrupt pairing used throughout this repo: a Sinhala prompt
+    and its literal English translation, asking the same question."""
+    return {"clean": sinhala_prompt, "corrupt": english_prompt}
