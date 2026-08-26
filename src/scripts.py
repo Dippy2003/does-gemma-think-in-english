@@ -9,6 +9,15 @@ SCRIPT_RANGES = (
 
 
 def script_of(s: str) -> str:
+    """Return the dominant Unicode script block of the first matching character.
+
+    This is a deterministic Unicode-block lookup, not a language identifier.
+    It answers "what script are these characters drawn from," not "what
+    language is this text in" — a Sinhala loanword written in Latin script
+    will read as "latin," and script alone cannot distinguish Sinhala from
+    Pali or Sanskrit text sharing the same block. Treat script as a cheap,
+    honest proxy for language, never as language identification itself.
+    """
     for ch in s:
         cp = ord(ch)
         for lo, hi, name in SCRIPT_RANGES:
