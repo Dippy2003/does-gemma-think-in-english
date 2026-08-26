@@ -124,6 +124,24 @@ def patch_heatmap(grid_df):
     return fig
 
 
+def layerwise_effect_curve(agg_effects_df):
+    """Mean patch effect per layer, with std-dev error band."""
+    set_style()
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.plot(agg_effects_df["layer"], agg_effects_df["mean"], marker="o", color="#d95f02")
+    ax.fill_between(
+        agg_effects_df["layer"],
+        agg_effects_df["mean"] - agg_effects_df["std"],
+        agg_effects_df["mean"] + agg_effects_df["std"],
+        alpha=0.2,
+        color="#d95f02",
+    )
+    ax.set_xlabel("layer")
+    ax.set_ylabel("mean patch effect")
+    fig.tight_layout()
+    return fig
+
+
 def fertility_distribution_violin(df, value: str = "tokens_per_word"):
     """Violin plot of per-line fertility, split by language."""
     set_style()
