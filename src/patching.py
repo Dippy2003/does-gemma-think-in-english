@@ -47,6 +47,29 @@ def patch_positions_at_layer(
     )
 
 
+def patch_random_direction(
+    model, corrupt_tokens, layer: int, position: int, magnitude: float, seed: int = 0
+):
+    """Placebo control: perturb resid_post at (layer, position) by a random
+    direction of the given magnitude, instead of the clean run's real
+    activation. A patching methodology that shows a large effect here is
+    broken — a random perturbation has no reason to systematically flip the
+    output."""
+    import torch
+
+    gen = torch.Generator().manual_seed(seed)
+
+    def patch_hook(tensor, hook):
+        direction = torch.randn(tensor.shape[-1], generator=gen)
+        direction = direction / direction.norm() * magnitude
+        tensor[:, position, :] += direction
+        return tensor
+
+    return model.run_with_hooks(
+        corrupt_tokens, fwd_hooks=[(f"blocks.{layer}.hook_resid_post", patch_hook)]
+    )
+
+
 def patch_layer_at_position(model, corrupt_tokens, clean_cache, layer: int, position: int):
     """Run the model on `corrupt_tokens`, but with `resid_post` at `layer`,
     `position` overwritten with the value from a clean run's cache. Returns
