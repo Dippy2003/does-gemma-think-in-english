@@ -9,6 +9,8 @@ where the decision actually lives — a claim logit lens or probing alone
 cannot support.
 """
 
+from dataclasses import dataclass
+
 from src.hooks import run_with_cache
 
 
@@ -46,3 +48,21 @@ def logit_diff(logits, position: int, correct_token_id: int, incorrect_token_id:
     return (
         logits[0, position, correct_token_id] - logits[0, position, incorrect_token_id]
     ).item()
+
+
+@dataclass
+class PatchResult:
+    layer: int
+    position: int
+    clean_logit_diff: float
+    corrupt_logit_diff: float
+    patched_logit_diff: float
+
+    @property
+    def effect(self) -> float:
+        """Normalized recovery: 0 = no effect (still like corrupt run), 1 =
+        fully restores the clean run's logit diff."""
+        span = self.clean_logit_diff - self.corrupt_logit_diff
+        if span == 0:
+            return 0.0
+        return (self.patched_logit_diff - self.corrupt_logit_diff) / span
