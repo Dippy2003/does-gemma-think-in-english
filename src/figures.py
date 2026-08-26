@@ -16,3 +16,16 @@ def set_style() -> None:
     plt.rcParams["figure.dpi"] = 150
     plt.rcParams["savefig.dpi"] = 300
     plt.rcParams["font.size"] = 11
+
+
+def fertility_bar_chart(table, value: str = "tokens_per_word"):
+    """Grouped bar chart: tokenizer x language, for `value`."""
+    set_style()
+    fig, ax = plt.subplots(figsize=(7, 4))
+    pivot = table.pivot(index="tokenizer", columns="language", values=value)
+    pivot.plot.bar(ax=ax)
+    ax.set_ylabel(value.replace("_", " "))
+    ax.set_xlabel("tokenizer")
+    ax.legend(title="language")
+    fig.tight_layout()
+    return fig
