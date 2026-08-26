@@ -27,6 +27,11 @@ def load_probes(path: str | Path = "data/parallel_probes.csv") -> pd.DataFrame:
     return df
 
 
+def category_counts(df: pd.DataFrame) -> dict:
+    """Row count per probe category, for coverage reporting."""
+    return df["category"].value_counts().to_dict()
+
+
 def verification_coverage(df: pd.DataFrame) -> float:
     """Fraction of rows with verified == True."""
     if len(df) == 0:
