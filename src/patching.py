@@ -47,6 +47,16 @@ def patch_positions_at_layer(
     )
 
 
+def patch_from_unrelated_prompt(
+    model, corrupt_tokens, unrelated_cache, layer: int, position: int
+):
+    """Placebo control: patch in activations from a completely unrelated
+    prompt (rather than the intended clean/English-twin prompt). If this
+    recovers the clean answer as reliably as the real clean-prompt patch,
+    the effect isn't specific to the clean prompt's content."""
+    return patch_layer_at_position(model, corrupt_tokens, unrelated_cache, layer, position)
+
+
 def patch_random_direction(
     model, corrupt_tokens, layer: int, position: int, magnitude: float, seed: int = 0
 ):
