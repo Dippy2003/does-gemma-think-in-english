@@ -112,6 +112,18 @@ def probe_accuracy_figure(accuracy_curve_df, baseline: float | None = None):
     return fig
 
 
+def patch_heatmap(grid_df):
+    """Heatmap of patch effect, layer x position."""
+    set_style()
+    pivot = grid_df.pivot(index="layer", columns="position", values="effect")
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.heatmap(pivot, cmap="RdBu_r", center=0, ax=ax, cbar_kws={"label": "patch effect"})
+    ax.set_xlabel("position")
+    ax.set_ylabel("layer")
+    fig.tight_layout()
+    return fig
+
+
 def fertility_distribution_violin(df, value: str = "tokens_per_word"):
     """Violin plot of per-line fertility, split by language."""
     set_style()
