@@ -43,3 +43,12 @@ def pivot_confidence(trace: Trace, pivot_layer: int) -> float:
     if not tail:
         return 0.0
     return sum(lt.prob for lt in tail) / len(tail)
+
+
+def english_likeness_score(trace: Trace) -> list[float]:
+    """Per-layer fraction-style score: 1.0 if decoded token is latin script, else 0.0.
+
+    A smoothed/aggregated version of this over many prompts is what Wendler
+    et al.'s "English pivot" curve actually looks like.
+    """
+    return [1.0 if lt.script == "latin" else 0.0 for lt in trace.layers]
