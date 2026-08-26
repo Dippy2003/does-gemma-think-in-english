@@ -27,6 +27,20 @@ def load_probes(path: str | Path = "data/parallel_probes.csv") -> pd.DataFrame:
     return df
 
 
+def single_token_report(df: pd.DataFrame, tokenizer) -> pd.DataFrame:
+    """For each answer column, report which rows tokenize to more than one token.
+
+    Multi-token answers make logit-lens argmax comparisons ambiguous, so probes
+    with multi-token answers should be flagged (not silently dropped).
+    """
+    out = df[["id"]].copy()
+    for col in ["answer_si", "answer_ta", "answer_en"]:
+        out[f"{col}_n_tokens"] = df[col].fillna("").apply(
+            lambda s: len(tokenizer.encode(s, add_special_tokens=False))
+        )
+    return out
+
+
 def category_counts(df: pd.DataFrame) -> dict:
     """Row count per probe category, for coverage reporting."""
     return df["category"].value_counts().to_dict()
