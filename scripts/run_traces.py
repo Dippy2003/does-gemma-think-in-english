@@ -11,6 +11,7 @@ from src.hooks import run_with_cache
 from src.io import load_probes, read_done_ids
 from src.logit_lens import build_trace, trace_to_json
 from src.model import load_model
+from src.progress import ProgressLogger
 
 
 def main() -> None:
@@ -31,19 +32,26 @@ def main() -> None:
     if done_ids:
         print(f"resuming: {len(done_ids)} rows already done")
 
+    progress = ProgressLogger(total=len(df), label="traces")
     with out_path.open("a", encoding="utf-8") as f:
-        for i, row in df.iterrows():
+        for _, row in df.iterrows():
             if row["id"] in done_ids:
+                progress.step()
                 continue
-            _, _, cache = run_with_cache(model, row["sinhala"])
-            trace = build_trace(model, row["sinhala"], cache)
-            f.write(json.dumps({"id": row["id"], **json.loads(trace_to_json(trace))}) + "\n")
-            f.flush()
-            del cache
-            gc.collect()
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-            print(f"{i + 1}/{len(df)} done")
+            cache = None
+            try:
+                _, _, cache = run_with_cache(model, row["sinhala"])
+                trace = build_trace(model, row["sinhala"], cache)
+                f.write(json.dumps({"id": row["id"], **json.loads(trace_to_json(trace))}) + "\n")
+                f.flush()
+            finally:
+                # clear the reference before collecting, or the cache tensor
+                # stays reachable through this frame and gc.collect() is a no-op
+                del cache
+                gc.collect()
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+            progress.step()
 
 
 if __name__ == "__main__":
