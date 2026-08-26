@@ -31,9 +31,9 @@ def load_model(name: str = "gemma-2-2b", dtype: str | None = None) -> HookedTran
         if device == "cuda":
             vram_gb = torch.cuda.get_device_properties(0).total_memory / 1e9
         dtype = select_dtype(device, vram_gb)
-    return HookedTransformer.from_pretrained(
-        name, dtype=dtype, device=device, hf_token=os.environ.get("HF_TOKEN")
-    )
+    # HF_TOKEN is picked up automatically by huggingface_hub from the
+    # environment; TransformerLens's from_pretrained doesn't take a token kwarg.
+    return HookedTransformer.from_pretrained(name, dtype=dtype, device=device)
 
 
 def load_with_fallback(role: str = "primary", dtype: str | None = None) -> HookedTransformer:
