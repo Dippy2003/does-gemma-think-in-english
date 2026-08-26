@@ -44,6 +44,14 @@ def shuffled_label_probe_control(y: list, seed: int = 0) -> list:
     return shuffled
 
 
+def placebo_layers(n_layers: int, real_layers: list, n: int = 3, seed: int = 0) -> list:
+    """Pick `n` layers with no a-priori reason to matter, avoiding the layers
+    actually under test — a placebo comparison for a patching sweep."""
+    rng = random.Random(seed)
+    candidates = [layer for layer in range(n_layers) if layer not in set(real_layers)]
+    return rng.sample(candidates, min(n, len(candidates)))
+
+
 def english_identity_condition() -> "list[dict]":
     """English prompt -> English answer. If the model doesn't pivot on its own
     native language, the whole pivot-detection pipeline is broken, not the
