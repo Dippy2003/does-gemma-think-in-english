@@ -15,7 +15,8 @@ output? Logit lens results should be reported as "the readout at layer N is
 X," never as "the model is doing X at layer N."
 """
 
-from dataclasses import dataclass, field
+import json
+from dataclasses import asdict, dataclass, field
 
 import torch
 
@@ -90,3 +91,7 @@ def print_trace_table(trace: Trace) -> None:
 def script_sequence(trace: Trace) -> list[str]:
     """The per-layer script labels only, e.g. ['other', 'latin', ..., 'sinhala']."""
     return [lt.script for lt in trace.layers]
+
+
+def trace_to_json(trace: Trace) -> str:
+    return json.dumps(asdict(trace), ensure_ascii=False, indent=2)
