@@ -31,3 +31,15 @@ def detect_pivot(trace: Trace, target_script: str, source_script: str = "latin")
             if all(r.script == target_script for r in rest):
                 return lt.layer
     return None
+
+
+def pivot_confidence(trace: Trace, pivot_layer: int) -> float:
+    """Mean top-token probability across layers from the pivot to the end.
+
+    A pivot detected from a run of low-confidence argmax tokens is weaker
+    evidence than one where the model's readout is consistently confident.
+    """
+    tail = [lt for lt in trace.layers if lt.layer >= pivot_layer]
+    if not tail:
+        return 0.0
+    return sum(lt.prob for lt in tail) / len(tail)
