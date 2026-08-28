@@ -1,0 +1,302 @@
+[
+  {
+    "id": "1",
+    "sinhala": "ප්‍රංශයේ අගනුවර _____",
+    "english": "The capital of France is _____",
+    "category": "factual"
+  },
+  {
+    "id": "2",
+    "sinhala": "ජපානයේ අගනුවර _____",
+    "english": "The capital of Japan is _____",
+    "category": "factual"
+  },
+  {
+    "id": "3",
+    "sinhala": "හිරු උදාවන්නේ _____ දිශාවෙනි",
+    "english": "The sun rises in the _____",
+    "category": "spatial"
+  },
+  {
+    "id": "4",
+    "sinhala": "හිරු බසින්නේ _____ දිශාවෙනි",
+    "english": "The sun sets in the _____",
+    "category": "spatial"
+  },
+  {
+    "id": "5",
+    "sinhala": "සතියේ පළමු දිනය _____",
+    "english": "The first day of the week is _____",
+    "category": "temporal"
+  },
+  {
+    "id": "6",
+    "sinhala": "අද දිනට පසුව එන දිනය _____",
+    "english": "The day after today is _____",
+    "category": "temporal"
+  },
+  {
+    "id": "7",
+    "sinhala": "මගේ මවගේ මව මට _____",
+    "english": "My mother's mother is my _____",
+    "category": "kinship"
+  },
+  {
+    "id": "8",
+    "sinhala": "මගේ පියාගේ පුතා මට _____",
+    "english": "My father's son is my _____",
+    "category": "kinship"
+  },
+  {
+    "id": "9",
+    "sinhala": "එකට එක එකතු කළොත් _____",
+    "english": "One plus one equals _____",
+    "category": "numeric"
+  },
+  {
+    "id": "10",
+    "sinhala": "දහයෙන් පහ අඩු කළොත් _____",
+    "english": "Ten minus five equals _____",
+    "category": "numeric"
+  },
+  {
+    "id": "11",
+    "sinhala": "ලෝකයේ විශාලතම මහාද්වීපය _____",
+    "english": "The largest continent in the world is _____",
+    "category": "factual"
+  },
+  {
+    "id": "12",
+    "sinhala": "අහස කුමන පාටද කිවහොත් _____",
+    "english": "The color of the sky is _____",
+    "category": "factual"
+  },
+  {
+    "id": "13",
+    "sinhala": "ගසක් වැඩෙන්නේ _____ ට",
+    "english": "A tree grows in the _____",
+    "category": "spatial"
+  },
+  {
+    "id": "14",
+    "sinhala": "වසරේ අවසාන මාසය _____",
+    "english": "The last month of the year is _____",
+    "category": "temporal"
+  },
+  {
+    "id": "15",
+    "sinhala": "මගේ සහෝදරයාගේ දුව මට _____",
+    "english": "My brother's daughter is my _____",
+    "category": "kinship"
+  },
+  {
+    "id": "16",
+    "sinhala": "තුනට තුන ගුණ කළොත් _____",
+    "english": "Three times three equals _____",
+    "category": "numeric"
+  },
+  {
+    "id": "17",
+    "sinhala": "ලෝකයේ දිගම ගඟ _____",
+    "english": "The longest river in the world is _____",
+    "category": "factual"
+  },
+  {
+    "id": "18",
+    "sinhala": "මාළුවෙක් ජීවත් වන්නේ _____",
+    "english": "A fish lives in _____",
+    "category": "spatial"
+  },
+  {
+    "id": "19",
+    "sinhala": "පැයකට විනාඩි _____ ඇත",
+    "english": "There are _____ minutes in an hour",
+    "category": "numeric"
+  },
+  {
+    "id": "20",
+    "sinhala": "මගේ පියාගේ සහෝදරයා මට _____",
+    "english": "My father's brother is my _____",
+    "category": "kinship"
+  },
+  {
+    "id": "21",
+    "sinhala": "ඉතාලියේ අගනුවර _____",
+    "english": "The capital of Italy is _____",
+    "category": "factual"
+  },
+  {
+    "id": "22",
+    "sinhala": "ජර්මනියේ අගනුවර _____",
+    "english": "The capital of Germany is _____",
+    "category": "factual"
+  },
+  {
+    "id": "23",
+    "sinhala": "ඊජිප්තුවේ අගනුවර _____",
+    "english": "The capital of Egypt is _____",
+    "category": "factual"
+  },
+  {
+    "id": "24",
+    "sinhala": "ලෝකයේ විශාලතම සාගරය _____",
+    "english": "The largest ocean in the world is _____",
+    "category": "factual"
+  },
+  {
+    "id": "25",
+    "sinhala": "ලෝකයේ උසම කන්ද _____",
+    "english": "The tallest mountain in the world is _____",
+    "category": "factual"
+  },
+  {
+    "id": "26",
+    "sinhala": "මේසය තිබෙන්නේ බිත්තියට _____",
+    "english": "The table is _____ the wall",
+    "category": "spatial"
+  },
+  {
+    "id": "27",
+    "sinhala": "පොත තිබෙන්නේ මේසය _____",
+    "english": "The book is _____ the table",
+    "category": "spatial"
+  },
+  {
+    "id": "28",
+    "sinhala": "මගේ පාපන්දු පන්දුව තිබෙන්නේ බෙන්චිය _____",
+    "english": "My football is _____ the bench",
+    "category": "spatial"
+  },
+  {
+    "id": "29",
+    "sinhala": "පාසල තිබෙන්නේ නිවසට _____",
+    "english": "The school is _____ the house",
+    "category": "spatial"
+  },
+  {
+    "id": "30",
+    "sinhala": "ගබඩාව තිබෙන්නේ නිවසෙන් _____",
+    "english": "The store is _____ from the house",
+    "category": "spatial"
+  },
+  {
+    "id": "31",
+    "sinhala": "සතියේ අවසාන දිනය _____",
+    "english": "The last day of the week is _____",
+    "category": "temporal"
+  },
+  {
+    "id": "32",
+    "sinhala": "වසරේ පළමු මාසය _____",
+    "english": "The first month of the year is _____",
+    "category": "temporal"
+  },
+  {
+    "id": "33",
+    "sinhala": "අද දිනට පෙර දිනය _____",
+    "english": "The day before today is _____",
+    "category": "temporal"
+  },
+  {
+    "id": "34",
+    "sinhala": "එක් වසරකට මාස _____ ඇත",
+    "english": "There are _____ months in one year",
+    "category": "temporal"
+  },
+  {
+    "id": "35",
+    "sinhala": "එක් සතියකට දින _____ ඇත",
+    "english": "There are _____ days in one week",
+    "category": "temporal"
+  },
+  {
+    "id": "36",
+    "sinhala": "මගේ පියාගේ මව මට _____",
+    "english": "My father's mother is my _____",
+    "category": "kinship"
+  },
+  {
+    "id": "37",
+    "sinhala": "මගේ මවගේ පුතා (මම නොවේ) මට _____",
+    "english": "My mother's son (not me) is my _____",
+    "category": "kinship"
+  },
+  {
+    "id": "38",
+    "sinhala": "මගේ දාව මගේ පුතාට _____",
+    "english": "My daughter is my son's _____",
+    "category": "kinship"
+  },
+  {
+    "id": "39",
+    "sinhala": "මගේ මවගේ සහෝදරයා මට _____",
+    "english": "My mother's brother is my _____",
+    "category": "kinship"
+  },
+  {
+    "id": "40",
+    "sinhala": "මගේ මවගේ සහෝදරිය මට _____",
+    "english": "My mother's sister is my _____",
+    "category": "kinship"
+  },
+  {
+    "id": "41",
+    "sinhala": "හතරට හතර ගුණ කළොත් _____",
+    "english": "Four times four equals _____",
+    "category": "numeric"
+  },
+  {
+    "id": "42",
+    "sinhala": "විස්සෙන් දහයක් අඩු කළොත් _____",
+    "english": "Twenty minus ten equals _____",
+    "category": "numeric"
+  },
+  {
+    "id": "43",
+    "sinhala": "පහට පහ එකතු කළොත් _____",
+    "english": "Five plus five equals _____",
+    "category": "numeric"
+  },
+  {
+    "id": "44",
+    "sinhala": "දහයෙන් දහය බෙදුවොත් _____",
+    "english": "Ten divided by ten equals _____",
+    "category": "numeric"
+  },
+  {
+    "id": "45",
+    "sinhala": "සියයට එකක් එකතු කළොත් _____",
+    "english": "One hundred plus one equals _____",
+    "category": "numeric"
+  },
+  {
+    "id": "46",
+    "sinhala": "ලෝකයේ ජනගහනය වැඩිම රට _____",
+    "english": "The most populous country in the world is _____",
+    "category": "factual"
+  },
+  {
+    "id": "47",
+    "sinhala": "ලෝකයේ කුඩාම මහාද්වීපය _____",
+    "english": "The smallest continent in the world is _____",
+    "category": "factual"
+  },
+  {
+    "id": "48",
+    "sinhala": "සූර්යයාට ආසන්නම ග්‍රහලෝකය _____",
+    "english": "The planet closest to the sun is _____",
+    "category": "factual"
+  },
+  {
+    "id": "49",
+    "sinhala": "පොත තිබෙන්නේ මේසය _____",
+    "english": "The book is _____ the table (below it)",
+    "category": "spatial"
+  },
+  {
+    "id": "50",
+    "sinhala": "බස් නැවතුම තිබෙන්නේ පාසලට _____",
+    "english": "The bus stop is _____ the school",
+    "category": "spatial"
+  }
+]

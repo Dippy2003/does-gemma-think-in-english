@@ -1,0 +1,189 @@
+# Does a multilingual LLM pivot through English when prompted in Sinhala?
+
+## Introduction
+
+Wendler et al. (2024) found that decoding the residual stream of Llama-family
+models at middle layers, via the logit lens, produces English-like tokens
+even when neither the prompt nor the target output is English — evidence
+that these models' internal concept space is biased toward English, with
+target-language identity applied late, close to the output. Every language
+tested so far — French, German, Chinese — is high-resource and mostly
+Latin- or Han-script. Sinhala is neither: it is low-resource, Brahmic-script
+(U+0D80–U+0DFF), morphologically rich, and — as this repo's own fertility
+measurements show (Phase 8) — heavily under-tokenized by every tokenizer
+tested. This project asks whether the English-pivot phenomenon replicates
+under these conditions, weakens, disappears, or is replaced by a pivot
+through a third, script- or lexically-adjacent language such as Hindi.
+
+## Related work
+
+Wendler et al. (2024), *Do Llamas Work in English? On the Latent Language of
+Multilingual Transformers*, is the direct precedent for this repo's logit-lens
+methodology (`src/logit_lens.py`) and its explicit distinction between a
+correlational readout and a causal mechanism — a distinction this repo
+enforces throughout (see every module docstring in `src/`) and resolves only
+via activation patching (`src/patching.py`), following the broader
+activation-patching / causal-tracing literature this repo does not attempt
+to survey exhaustively.
+
+## Methods
+
+### Tokenizer fertility
+
+Tokenizer fertility — tokens per word and tokens per character — is measured
+first, as a control rather than a finding. If Sinhala costs substantially more
+tokens per word than English under a given tokenizer, the model has more
+sequence positions to work with per unit of meaning, and any apparent
+difference in logit-lens pivot depth between languages could be a mechanical
+artifact of tokenization rather than a representational difference. Fertility
+is measured across four tokenizers (Gemma-2, Qwen2.5, Llama-3.2, and
+gpt-oss's o200k_harmony) on parallel Sinhala/Tamil/English corpora, using
+`tokens_per_word` and `tokens_per_char` (`src/fertility.py`), before any
+logit-lens or probing result is interpreted.
+
+### Models
+
+Primary: `google/gemma-2-2b` (26 layers, d_model 2304), loaded via
+TransformerLens (`src/model.py`). Replication: `Qwen/Qwen2.5-1.5B`, a
+different pretraining mix and tokenizer, used to check that any finding is
+not a Gemma-2 idiosyncrasy. `meta-llama/Llama-3.2-1B` is the fallback model,
+used only if Gemma-2 fails to load — it did not, in this repo's own
+verification (Phase 9), so all reported model-level results are Gemma-2.
+
+### Logit lens
+
+At each layer, `resid_post` is read from the residual stream, passed through
+the model's final layernorm and unembedding matrix, and the argmax token and
+its Unicode script are recorded (`src/logit_lens.py`, `src/scripts.py`). This
+is a readout of what the output head would produce from that intermediate
+state — correlational only, never treated as a mechanistic claim (see that
+module's docstring for the full argument).
+
+### Linear probes
+
+A logistic regression probe is trained per layer on last-token `resid_post`
+activations to predict prompt language (`src/probes.py`,
+`src/probe_model.py`). This answers a narrower question than the logit lens
+— is the language signal linearly present — not whether the model relies on
+it.
+
+### Activation patching
+
+The only causal method in this repo (`src/patching.py`). A Sinhala prompt and
+its literal English twin are each run through the model; one run's
+`resid_post` at a chosen layer and position is transplanted into the other,
+and the change in the correct-vs-incorrect answer's logit difference is
+measured. The layer with the largest mean effect
+(`causal_bottleneck_layer`, `src/metrics.py`) is compared directly against
+the logit-lens pivot layer (`compare_to_logit_lens_pivot`) — the central
+comparison this repo is built to make.
+
+### Controls
+
+English-to-English identity, shuffled-prompt, shuffled-label probe, placebo
+patching (unrelated layers, random directions, cross-prompt activations),
+and cross-model replication — see `docs/CONTROLS.md` for the rationale
+behind each.
+
+## Results (preliminary, n=8 of 100 probes)
+
+This repo's development environment is CPU-only (no CUDA build of torch, 4GB
+laptop GPU — see `docs/COMPUTE.md`), and a single 26-layer logit-lens trace
+on `gemma-2-2b` took roughly 3-4 minutes there. 8 of the 100 probe prompts
+had completed a full batch trace (`results/traces.jsonl`) at the time of
+this writeup; the figures and full-dataset statistics described elsewhere
+in this repo (`README.md` "Headline finding", `results/PROBE_RESULTS_STATUS.md`,
+`results/PATCHING_RESULTS_STATUS.md`) are pending completion of that batch
+run and are not yet backed by data. What follows is reported honestly as a
+preliminary read on 8 prompts, not a dataset-level finding.
+
+Running `detect_pivot(target_script="sinhala")` (a *stable* switch to Sinhala
+that persists through the final layer) on these 8 traces
+(`src.pivot.aggregate_pivot_stats`) found **zero** stable pivots to Sinhala
+(`pivot_rate=0.0`). Two distinct patterns appeared instead:
+
+- 6 of 8 prompts: the readout stays `latin`-script for nearly the entire
+  layer stack, decaying into unclassified ("other") tokens only in the last
+  few layers — consistent with Outcome 1 (English-pivot) *without* a
+  detectable return to Sinhala at the output, at least under this repo's
+  strict pivot definition.
+- 2 of 8 prompts: the readout starts `sinhala`-script in the earliest
+  layers, but degrades into unclassified ("other") tokens for the rest of
+  the network rather than settling into either `latin` or `sinhala` — a
+  diffuse, non-coherent readout consistent with Outcome 2 in this repo's
+  framing (`README.md`), and worth flagging since Outcome 2 was predicted
+  as the most likely result for a low-resource, heavily fragmented script
+  going in.
+
+**This is not a dataset-level claim.** n=8 is far too small to distinguish a
+real pattern from noise, and no controls (Phase 16/24) or activation
+patching (the only causal method in this repo) have been run against these 8
+traces. It is reported here only because the honesty rule governing this
+repo (`MASTER_PROMPT.md`) requires reporting what was actually run, not
+projecting what the full run would likely show. Notably, *no* traced prompt
+shows the classic Wendler-et-al. English-pivot-then-return-to-source-language
+pattern at all under this repo's strict definition — the readout either
+stays English-like throughout, or degrades to unclassifiable tokens. Whether
+that reflects Outcome 1 (with a looser pivot definition), Outcome 2, or an
+artifact of `from_pretrained_no_processing` skipping the standard layernorm
+folding (see Limitations) cannot be distinguished without more data and,
+critically, without the English-identity control actually being run.
+
+## Limitations and threats to validity
+
+- **Sample size.** The results above cover 8 of 100 probe prompts, 0 of the
+  planned Tamil/English-identity/shuffled control runs, and 0 activation
+  patching sweeps. Every quantitative claim in this repo should be read
+  against that gap until the full batch completes.
+- **Compute environment mismatch.** `MASTER_PROMPT.md` targets a free Colab
+  T4 (16GB VRAM, CUDA). This repo was developed and verified on a CPU-only
+  torch build with a 4GB laptop GPU that CUDA-enabled torch never actually
+  exercised — see `docs/COMPUTE.md`. `HookedTransformer.from_pretrained_no_processing`
+  was required to avoid an OOM/segfault in the default weight-processing
+  path under these constraints (see the `fix:` commits in `src/model.py`'s
+  history). A GPU run on the intended hardware has not been performed and
+  may behave differently.
+- **No processed weights.** Because `from_pretrained_no_processing` was
+  used, layernorms are not folded and unembed weights are not centered —
+  standard TransformerLens conveniences that some analyses (e.g. exact
+  logit attribution) assume. Logit-lens argmax decoding, this repo's main
+  method, does not depend on those foldings, but any future analysis that
+  does should account for this.
+- **Probe set is unverified.** Every row in `data/parallel_probes.csv` has
+  `verified=false` (`data/README.md`). No native speaker has checked the
+  Sinhala/Tamil translations. `scripts/check_probes.py`'s 80% coverage gate
+  has not been passed, and per the repo's own design (`MASTER_PROMPT.md`
+  section 6.2), no downstream result should be treated as final until it is.
+- **Llama-3.2 fertility not measured** (gated, access not granted to this
+  project's token — `results/fertility_llama-3.2_STATUS.md`); fertility
+  comparisons in this repo cover 3 of the intended 4 tokenizers.
+- **English identity control not run.** The single most basic sanity check
+  — does the pipeline detect the standard pivot on English-to-English
+  prompts at all — has not been executed. Until it has, the absence of a
+  Sinhala pivot in the n=4 sample above cannot be distinguished from a
+  pipeline defect.
+
+## Citation and reproducibility
+
+```
+@article{wendler2024llamas,
+  title={Do Llamas Work in English? On the Latent Language of Multilingual Transformers},
+  author={Wendler, Chris and Veselovsky, Veniamin and Monea, Giovanni and West, Robert},
+  journal={arXiv preprint arXiv:2402.10588},
+  year={2024}
+}
+```
+
+Reproducibility: `requirements.txt` is pinned to the exact versions verified
+against this repo's own execution environment (`torch==2.13.0`,
+`transformer-lens==3.8.0`, `transformers==5.15.1`). See the `fix:` commits
+in `src/model.py`'s git history for two real bugs hit and fixed while
+getting `google/gemma-2-2b` to load here — an invalid `hf_token` kwarg, and
+a CPU weight-processing OOM/segfault worked around via
+`from_pretrained_no_processing`. `docs/COMPUTE.md` documents what
+"verified" means concretely: CPU-only torch, no CUDA build, a 4GB laptop GPU
+never actually exercised. `results/manifest.json` records which git commit
+produced each results artifact. Every experiment script degrades to CPU
+rather than crashing (`src/model.get_device`), and every batch runner
+checkpoints via append-only `.jsonl` (`src/io.read_done_ids`) so an
+interrupted run resumes rather than restarting from scratch.
